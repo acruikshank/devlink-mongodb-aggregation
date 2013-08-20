@@ -1,0 +1,130 @@
+
+/*
+	Customer:
+		email		
+		firstName
+		lastName
+		address
+			phone
+			street
+			city
+			zip
+		purchases
+			date
+			sku
+			amount
+		webVisits
+			date
+			hits
+
+Project
+	inclusion, _id exclusion
+	name mapping, owner name concatentation
+
+Sort, Limit, Skip
+	demonstrate power of query concatenation.
+
+Unwind
+	Names of people who have visited in the last week
+	All skus (with dups)
+
+Group
+	All last names
+	Count people within zip
+	Total revenue
+	Revenue per sku
+
+
+*/
+
+// Match
+db.customers.aggregate([
+	{$match: { email:'fthompson@hotmail.com' }}
+])
+
+db.customers.aggregate([
+	{$match: { 'address.zip':'37421' }}
+])
+
+// PROJECT
+db.customers.aggregate([
+	{$project: {_id:0, firstName:1, lastName:1}}
+])
+
+db.customers.aggregate([
+	{$project: {_id:0, name:{$concat:['$firstName',' ','$lastName']}, zip:'$address.zip'}}
+])
+
+
+// Unwind
+db.customers.aggregate([
+	{$unwind: '$purchases'},
+	{$project: {_id:0, date:'$purchases.date', sku:'$purchases.sku'}}
+])
+
+db.customers.aggregate([
+	{$unwind: '$webVisits'},
+	{$project: {_id:0, date:'$webVisits.date', hits:'$webVisits.hits'}}
+])
+
+// Group
+db.customers.aggregate([
+	{$group: {_id:'$lastName', count:{$sum:1}}},
+	{$sort: {count:-1}}
+])
+
+db.customers.aggregate([
+	{$group: {_id:{first:'$firstName', last:'$lastName'}, count:{$sum:1}}},
+	{$sort: {count:-1}}
+])
+
+db.customers.aggregate([
+	{$group: {_id:'$address.zip', count:{$sum:1}}},
+	{$sort: {count:-1}}
+])
+
+db.customers.aggregate([	
+	{$unwind: '$purchases'},
+	{$match: {'purchases.date':{$gte:new Date('2013-08-01')}}},
+	{$group: {_id:'revenue', total:{$sum:'$purchases.amount'}}}
+])
+
+db.customers.aggregate([
+	{$match: {email:'tmartin@hotmail.com'}},
+	{$unwind: '$purchases'},
+	{$match: {'purchases.date':{$gte:new Date('2013-08-01')}}},
+	{$group: {_id:'$purchases.sku', total:{$sum:'$purchases.amount'}, brand:{$first:'$purchases.name'}}},
+	{$project: {_id:0, brand:1, total:1}},
+	{$sort: {total:-1}}
+])
+
+// Revenue per sku
+db.customers.aggregate([
+	{$match: {'address.zip':'37421'}},
+	{$project: {_id:0, email:1, name:{$concat:['$firstName',' ','$lastName']}, webVisits:1}},
+	{$unwind: '$webVisits'},
+	{$match: {'webVisits.date':{$gte:new Date('2013-08-20')}}},
+	{$group: {_id:'$email', name:{$first:'$name'}, hits:{$sum:'$webVisits.hits'}}},
+	{$match: {hits:{$gte:5}}}
+])
+
+// Average revenue per person per visit
+db.customers.aggregate([
+	{$unwind: '$purchases'},
+	{$group: {_id:{email:'$email', date:'$purchases.date'}, total:{$sum:'$purchases.amount'}}},
+	{$group: {_id:'average_revenue', visits:{$sum:1}, revenue:{$sum:'$total'}}},
+	{$project: {_id:0, visits:1, "average revenue per-person per-visit":{$divide:['$revenue','$visits']}}}
+])
+
+db.customers.aggregate([
+	{$unwind: '$purchases'},
+	{$group: {_id:{email:'$email', date:'$purchases.date'}, total:{$sum:'$purchases.amount'}, webVisits:{$first:'$webVisits'}}},
+	{$unwind: '$webVisits'},
+	{$project: {_id:1, total:1, matches:{$eq:['$_id.date', '$webVisits.date']}}},
+	{$match: {matches:true}},
+	{$group: {_id:'average_revenue', visits:{$sum:1}, revenue:{$sum:'$total'}}},
+	{$project: {_id:0, visits:1, "average revenue per-person per-visit":{$divide:['$revenue','$visits']}}}
+])
+
+
+

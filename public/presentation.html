@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>MongoDB Aggregation Presentation</title>
+  <style>
+    html { height: 100%; }
+    body {
+      background-color: rgb(40,40,40);
+      margin: 0;
+      padding: 0;
+      font-family: Futura,Helvetica,Arial,san-serif;
+      color: #eee;
+      overflow: hidden;
+      height: 100%;
+       -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+   }
+
+   .slide {
+     position: absolute;
+     top: 0;
+     color: #eee;
+     overflow: hidden;
+   }
+
+  .slide.transition, .sub-slide.transition {
+    -webkit-transition: left .15s ease;
+  }
+
+  .slide .head {
+    text-align: center;
+    font-size: 48px;
+    font-weight: normal;
+    margin: 60px 0 60px;
+  }
+
+  .slide.bulleted ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .slide.bulleted li {
+    font-size: 40px;
+    line-height: 90px;
+    width: 800px;
+    margin: 0 auto;
+  }
+
+  .slide.bulleted.narrow li {
+    width: 400px;
+  }
+
+  .slide.bulleted.wide li {
+    width: 1000px;
+  }
+
+  .slide img {
+    display: block;
+    height: 50%;
+    margin: 0 auto;
+  }
+
+  .slide label.caption {
+    display: block;
+    text-align: center;
+    font-size: 24px;
+    font-weight: normal;
+    margin-top: 40px;    
+  }
+
+  .slide .center {
+    text-align: center;
+    font-size: 60px;
+    font-weight: normal;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    margin-top: -30px;
+    line-height: 60px;
+    height: 60px;
+  }
+
+  .slide label.sub-center {
+    display: block;
+    text-align: center;
+    font-size: 24px;
+    font-weight: normal;
+    margin-top: 40px; 
+    position: absolute;  
+    top:50%;
+    width: 100%;
+    margin-top: 40px;
+  }
+
+  .sub-slide {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+
+  .sub-slide h3 {
+    text-align: center;
+    font-size: 30px;
+    font-weight: normal;
+    margin: 60px 0 60px;
+    color: #ccc;    
+  }
+
+  .title-screen {
+    position: absolute;
+    right: 0px;
+    width: 100%;
+    bottom: 5%;
+  }
+
+  .title-screen h1 {
+    font-size: 64px;
+    font-weight: normal;
+    text-align: center;
+    margin: 0px 0 100px;
+  }
+
+  h2.by_line {
+    font-size: 34px;
+    font-weight: normal;
+    margin: 0 6% 0 0;
+    padding:0 10% 0 0;
+    line-height: 65px;
+    text-align: right;
+  }
+
+  h2.logo {
+    margin: 0;
+    margin: 0 5% 0 0;
+    padding:0;
+    text-align: right;    
+  }
+
+  h2.logo img {
+    height: 100px;
+    display: inline;
+    margin: 0;
+  }
+
+  .editor-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 50%;
+    left: 0;
+  }
+  .editor-container .editor {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    left: 0;        
+    font-size: 20px;
+  }
+
+  .results {
+    position: absolute;
+    height: 50%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    overflow: auto;
+  }
+
+  .results .field {
+    display: inline-block;
+  }
+
+  .results .result {
+    margin: 0px 0 5px;
+  }
+
+  .results label {
+    padding: 0 .4em 0 1em;
+    color: #dec;
+  }
+
+  .results .purchases {
+    display: none;
+  }
+
+  .results .address {
+    display: none;
+  }
+
+  .results .webVisits {
+    display: none;
+  }
+  </style>
+  <link rel="stylesheet" type="text/css" href="rdbms_vs_dodb.css">
+  <script src="rdbms_vs_dodb.js" charset="utf-8"></script>
+</head>
+<body>
+  <div class="slide">
+    <div class="title-screen">
+      <h1>MongoDB Aggregation Framework</h1>
+      <h2 class="by_line">Alex Cruikshank</h2>
+      <h2 class="by_line">acruikshank@github</h2>
+      <h2 class="by_line">@sivoh</h2>
+      <h2 class="logo"><img src="c5_logo.png"/></h2>      
+    </div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">MongoDB</h2>
+    <ul class='hidden-points'>
+      <li>Created by 10Gen in 2007 as a PaaS</li>
+      <li>Open Sourced in 2010</li>
+      <li>Current Version is 2.4.5</li>
+      <li>Aggregation Framework introduced in 2.1</li>
+    </ul>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">Motivation for Aggregation Framework</h2>
+  </div>
+
+  <div class="slide">
+    <div id="rdbms_vs_dodb" class="interactive">
+      <div class="database">
+        <svg class="lines">
+          <path class="c-to-e"></path>
+        </svg>
+        <div class="table company">
+          <ul>
+            <li class="title">Company</li>
+            <li>name</li>
+            <li>established</li>
+          </ul>
+        </div>
+        <div class="table comp_cust">
+          <ul>
+            <li class="title">Employee</li>
+            <li>company_id</li>
+            <li>person_id</li>
+          </ul>
+        </div>
+        <div class="table customer">
+          <ul>
+            <li class="title">Person</li>
+            <li>name</li>
+            <li>email</li>
+          </ul>
+        </div>
+        <div class="table product">
+          <ul>
+            <li class="title">Product</li>
+            <li>name</li>
+            <li>sku</li>
+            <li>price</li>
+          </ul>
+        </div>
+        <div class="table comp_prod">
+          <ul>
+            <li class="title">Comp_prod</li>
+            <li>company_id</li>
+            <li>product_id</li>
+          </ul>
+        </div>
+        <div class="table prod_cust">
+          <ul>
+            <li class="title">Purchase</li>
+            <li>product_id</li>
+            <li>person_id</li>
+            <li>price</li>
+            <li>date</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sub-slide">
+      <h3>Relational Database Theory</h3>
+    </div>
+    <div class="sub-slide">
+      <h3>Fully Normalized</h3>
+    </div>
+    <div class="sub-slide">
+      <h3>Denormalized</h3>
+    </div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <div class="editor-container">
+      <div id="project_editor" class="editor interactive">
+  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}}
+  ])
+      </div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <div class="editor-container">
+      <div id="unwind_editor" class="editor interactive">
+  db.customers.aggregate([
+    {$project:{_id:0, email:1}}
+  ])
+      </div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide">
+    <div class="title-screen">
+      <h1>Thank You!</h1>
+      <h2 class="by_line">Alex Cruikshank</h2>
+      <h2 class="by_line">acruikshank@github</h2>
+      <h2 class="by_line">@sivoh</h2>
+      <h2 class="logo"><img src="c5_logo.png"/></h2>      
+    </div>
+  </div>
+
+</body>
+<foot>
+  <script src="aggregateDemonstration.js" type="text/javascript" charset="utf-8"></script>
+  <script src="vendor/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+
+    var slideIndex = 0;
+    var subSlideIndex = 0;
+    var subslides;
+
+    preso.rdbms_vs_dodb.init();
+    var demos = document.getElementsByClassName('aggregate-demo');
+    for (var i=0,demo; demo = demos[i]; i++) {
+      var name = demo.getElementsByClassName('editor')[0].id;
+      preso[name] = dma_talk.aggregationDemonstration(demo);
+      preso[name].init();
+    }
+
+    function removeClass(el, clss) {
+      var re = new RegExp("^"+clss+"$|^"+clss+"\\s+|\\s+"+clss+"$|\\s+"+clss+"(\\s+)");
+      el.setAttribute( "class", (el.getAttribute('class')||'').replace(re,"$1") )
+    }
+    function addClass(el, clss) {
+      removeClass(el,clss)
+      el.setAttribute( 'class', (el.getAttribute('class') || '') + ' ' + clss )
+    }
+    function hasClass(el, clss) {
+      return !!(el.getAttribute('class')||'').match(new RegExp("(\\s+|^)"+clss+"(\\s+|$)"));
+    }
+
+    if ( location.hash && location.hash.match(/#\d+$/) )
+      slideIndex = +location.hash.match(/#(\d+)$/)[1]
+
+    var slides = document.getElementsByClassName('slide');
+    arrangeSlides( slides, slideIndex, true )
+    subslides = slides[slideIndex].getElementsByClassName('sub-slide');
+    if ( ! subslides.length ) {
+      subslides = null;
+    } else {
+      subSlideIndex = 0;
+      arrangeSlides( subslides, 0 );
+    }
+
+    function arrangeSlides( slides, index, autoHeight ) {
+      for (var i=0, slide; slide = slides[i]; i++) {
+        slide.style.width = document.body.offsetWidth + 'px';
+        if ( autoHeight )
+          slide.style.height = document.body.offsetHeight + 'px';
+        if ( i > index )
+          slide.style.left = document.body.offsetWidth + 'px';
+        else if ( i < index )
+          slide.style.left = -slide.offsetWidth + 'px';
+        else 
+          slide.style.left = '0px';
+      }      
+    }
+
+    function transition( oldSlide, newSlide, direction, adjustHeight ) {
+      var windowWidth = document.body.offsetWidth;
+      removeClass( newSlide, 'transition' );
+      newSlide.style.width = document.body.offsetWidth + 'px';
+      if (adjustHeight)
+        newSlide.style.height = document.body.offsetHeight + 'px';
+      newSlide.style.left = direction * windowWidth + 'px';
+      addClass( newSlide, 'transition' );
+      addClass( oldSlide, 'transition' );
+      
+      setTimeout(function() { 
+        newSlide.style.left = '0px'; 
+        oldSlide.style.left = -direction * oldSlide.offsetWidth + 'px' 
+      }, 1);
+      return newSlide;
+    }
+
+    function transitionSlide( oldSlide, newSlide, direction ) {
+      var interactive = oldSlide.getElementsByClassName('interactive');
+      for (var i=0, el; el = interactive[i]; i++)
+        preso[el.id].hide();
+
+      interactive = newSlide.getElementsByClassName('interactive');
+      for (var i=0, el; el = interactive[i]; i++)
+        preso[el.id].show();
+
+      subslides = newSlide.getElementsByClassName('sub-slide');
+      if ( ! subslides.length ) {
+        subslides = null;
+      } else {
+        subSlideIndex = ~direction ? 0 : subslides.length - 1;
+        arrangeSlides( subslides, subSlideIndex );
+      }
+
+      return transition(oldSlide, newSlide, direction, true);
+    }
+
+    function next() {
+      if ( subslides && subSlideIndex < subslides.length - 1 )
+        return transition( subslides[subSlideIndex], subslides[++subSlideIndex], 1 );
+
+      if ( slideIndex >= slides.length - 1 )
+        return;
+
+      transitionSlide( slides[slideIndex], slides[++slideIndex], 1 );
+      location.hash = slideIndex;
+    }
+
+    function prev() {
+      if ( subslides && subSlideIndex > 0 )
+        return transition( subslides[subSlideIndex], subslides[--subSlideIndex], -1 );
+
+      if ( slideIndex < 1 )
+        return;
+      transitionSlide( slides[slideIndex], slides[--slideIndex], -1 );
+      location.hash = slideIndex;
+    }
+
+    document.body.addEventListener( 'keyup', function(e) {
+      if (e.ctrlKey && e.keyCode == 39) {
+        next()
+        return false;
+      } else if (e.ctrlKey && e.keyCode == 37) {
+        prev()
+        return false;
+      }
+    } )
+
+  </script>
+</foot>
+</html>

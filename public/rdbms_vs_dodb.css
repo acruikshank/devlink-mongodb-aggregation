@@ -1,0 +1,42 @@
+#rdbms_vs_dodb {
+	position: relative;
+}
+
+#rdbms_vs_dodb .table {
+	border: 1px solid #fff;
+	position: absolute;
+}
+
+#rdbms_vs_dodb .table ul {
+		margin: 0;
+		padding: 0 0 8px 0;
+		list-style: none;
+}
+
+#rdbms_vs_dodb .table li {
+	padding: 0 1em;
+	font-size: 18px;
+}
+
+#rdbms_vs_dodb .table li.title {
+	border-bottom: 1px solid #fff;
+	margin-bottom: 8px;
+	line-height: 40px;
+}
+
+#rdbms_vs_dodb svg path {
+  stroke: #fff;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  fill: none;
+}
+
+#rdbms_vs_dodb .company {	left: 40px;	top: 100px; }
+#rdbms_vs_dodb .comp_cust {	left: 420px;	top: 40px; }
+#rdbms_vs_dodb .customer {	left: 800px;	top: 100px; }
+
+#rdbms_vs_dodb .comp_prod {	left: 220px;	top: 250px; }
+#rdbms_vs_dodb .product {	left: 440px;	top: 300px; }
+#rdbms_vs_dodb .prod_cust {	left: 600px;	top: 250px; }
+
+
