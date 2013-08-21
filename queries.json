@@ -38,9 +38,6 @@ Group
 */
 
 // Match
-db.customers.aggregate([
-	{$match: { email:'fthompson@hotmail.com' }}
-])
 
 db.customers.aggregate([
 	{$match: { 'address.zip':'37421' }}

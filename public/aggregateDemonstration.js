@@ -178,10 +178,13 @@ dma_talk.aggregationDemonstration = function(slide) {
   function init( forward, back ) {
     var editorId = slide.getElementsByClassName('editor')[0].id;
     editor = ace.edit(editorId);
-    editor.setTheme("ace/theme/idle_fingers");
-//    editor.setTheme("ace/theme/merbivore_soft");
+//    editor.setTheme("ace/theme/idle_fingers");
+    editor.setTheme("ace/theme/merbivore_soft");
 //    editor.setTheme("ace/theme/tomorrow_night");
+//    editor.setTheme("ace/theme/solarized_dark");
     editor.getSession().setMode("ace/mode/javascript");
+    editor.getSession().setTabSize(2);
+    editor.getSession().setUseSoftTabs(true);
     editor.setShowPrintMargin(false)
     editor.commands.addCommand({
         name: 'toggleEditor',

@@ -404,6 +404,20 @@
     </div>
   </div>
 
+  <div class="slide">
+    <h2 class="center">Commands</h2>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$match</h2>
+    <ul class='hidden-points'>
+      <li>Filter Documents</li>
+      <li>Functional: filter()</li>
+      <li>SQL: where</li>
+      <li>$match is always first the stage!</li>
+    </ul>
+  </div>
+
   <div class="slide aggregate-demo">
     <h2 class="top">$match</h2>
     <div class="editor-container">
@@ -422,6 +436,15 @@
   ])</div>
     </div>
     <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$project</h2>
+    <ul class='hidden-points'>
+      <li>Transform Documents</li>
+      <li>Functional: map()</li>
+      <li>SQL: projection</li>
+    </ul>
   </div>
 
   <div class="slide aggregate-demo">
@@ -444,6 +467,45 @@
   ])</div>
     </div>
     <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$sort, $skip &amp; $limit</h2>
+    <ul class='hidden-points'>
+      <li>Sort and page documents</li>
+      <li>Functional: sort(), slice()</li>
+      <li>SQL: sort, skip, limit</li>
+      <li>Proper stages</li>
+    </ul>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$sort, $skip, $limit</h2>
+    <div class="editor-container">
+      <div id="limit_skip_sort_editor" class="editor interactive">  var PAGE_SIZE = 5;
+  function sort(field, ascending) {
+    var s = {$sort:{}}; s.$sort[field] = ascending ? 1 : -1; return [s];
+  }
+  function page(pageIndex) {
+    return [ {$skip: pageIndex * PAGE_SIZE}, {$limit: PAGE_SIZE} ]
+  }
+  var fullName = [{$project: {_id:0, name:{$concat:['$firstName',' ','$lastName']}}}];
+  var email = [{$project: {_id:0, email:1}}]
+
+  db.customers.aggregate( fullName.concat(sort('name',1)).concat(page(0)) )</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$unwind</h2>
+    <ul class='hidden-points'>
+      <li>Flatten arrays into multiple documents</li>
+      <li>Functional: flatten</li>
+      <li>SQL: outer join</li>
+      <li>Reduces document complexity</li>
+      <li>Expands collection size</li>
+    </ul>
   </div>
 
   <div class="slide aggregate-demo">
@@ -470,6 +532,16 @@
     <div class="results"></div>
   </div>
 
+  <div class="slide bulleted">
+    <h2 class="head">$group</h2>
+    <ul class='hidden-points'>
+      <li>Combine multiple documents</li>
+      <li>Functional: reduce</li>
+      <li>SQL: group by + operators</li>
+      <li>Reduces collection size</li>
+      <li>Can increase document complexity</li>
+    </ul>
+  </div>
 
   <div class="slide aggregate-demo">
     <h2 class="top">$group last name frequency</h2>
@@ -533,6 +605,9 @@
     <div class="results"></div>
   </div>
   
+  <div class="slide">
+    <h2 class="center">More Examples</h2>
+  </div>
 
   <div class="slide aggregate-demo">
     <h2 class="top">customers with more than 5 hits</h2>
