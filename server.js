@@ -42,8 +42,19 @@ function collection(name) {
   }
 }
 
+function parseDates(obj) {
+  if (typeof(obj) == 'object') {
+    if (Array.isArray(obj)) return obj.map(parseDates);
+    var o = {};
+    for (var k in obj) if (obj.hasOwnProperty(k)) o[k] = parseDates(obj[k]);
+    return o;
+  }
+  if (typeof(obj) == 'string' && obj.match(/^\d+-\d+-\d+T\d+:\d+:\d+\.\d+Z$/)) return new Date(obj);
+  return obj;
+}
+
 function aggregate(req, res, next) {
-  return req.collection.aggregate(req.body, withResults);
+  return req.collection.aggregate(parseDates(req.body), withResults);
 
   function withResults(err, agResults) {
     if (err) return next(err);

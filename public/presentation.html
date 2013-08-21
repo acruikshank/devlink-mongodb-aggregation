@@ -148,12 +148,20 @@
     margin: 0;
   }
 
+  h2.top {
+    text-align: center;
+    padding-top: 0;
+    margin-top: 10px;
+  }
+
   .editor-container {
+    -webkit-transition: opacity .2s linear;
     position: absolute;
-    top: 0;
+    top: 8%;
     right: 0;
-    height: 50%;
+    height: 41%;
     left: 0;
+    z-index: 1;
   }
   .editor-container .editor {
     position: absolute;
@@ -166,37 +174,143 @@
 
   .results {
     position: absolute;
-    height: 50%;
-    bottom: 0;
-    right: 0;
-    left: 0;
+    height: 49%;
+    bottom: 1%;
+    right: 20px;
+    left: 20px;
     overflow: auto;
+    font-size:16px;
+  }
+
+  .aggregate-demo .stats {
+    text-align: center;
+    padding: .3em .8em;
+    font-size: 20px;
+    position: absolute;
+    bottom: 1%;
+    right: 20px;
+    background: rgba(10,10,10,.85);
+    z-index: 1;
+    border-radius: 6px;
+    border: 1px solid #000;
+  }
+
+
+  .results .result {
+    margin: 0px 0 6px;
+    white-space: nowrap;
+  }
+
+  .results .result:last-child {
+    margin-bottom: 20px;
   }
 
   .results .field {
     display: inline-block;
+    position: relative;
+    vertical-align: top;
   }
 
-  .results .result {
-    margin: 0px 0 5px;
+  .results .field:last-child {
+    margin-right: 20px;
   }
 
-  .results label {
+  .results label, .aggregate-demo .stats label {
     padding: 0 .4em 0 1em;
-    color: #dec;
+    color: #cea;
   }
 
-  .results .purchases {
-    display: none;
+  .aggregate-demo .stats label {
+    padding-left: 0;
   }
 
-  .results .address {
-    display: none;
+  .results .disclosure {
+    font-size: 14px;
+    color: #78b;
+    cursor: pointer;
+    display: block;
+    float: right;
+    margin-top: 2px;
   }
 
-  .results .webVisits {
-    display: none;
+  .results .opened .disclosure {
+    -webkit-transform: rotate(-180deg);
   }
+
+  .results .toggle {
+    -webkit-transition: width .2s ease, height .5s ease;
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+  }
+
+  .aggregate-demo .editor-toggle {
+    width: 80px;
+    height: 8%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+  }
+
+  .aggregate-demo .editor-toggle-thumb {
+    -webkit-transition: background-color,left .2s ease;
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    margin-top: -6px;
+    top: 50%;
+    left: 0px;
+    background-color: #7ae;
+    border-radius: 6px;
+  }
+
+  .aggregate-demo .stages {
+    position: absolute;
+    top: 8%;
+    right: 0;
+    height: 41%;
+    left: 0;
+  }
+
+  .aggregate-demo .stages .step {
+    background-color: #368;
+    font-size: 18px;
+    padding: .4em 0;    
+    cursor: pointer;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  }
+
+  .aggregate-demo .stages .step:hover {
+    background-color: #479;
+  }
+
+  .aggregate-demo .stages .step-active {
+    display: inline-block;
+    border-radius: 10px;
+    width: 12px;
+    height: 12px;
+    margin: 0 1em 0 2em;
+    border: 2px solid #fff;
+    vertical-align: baseline;
+  }
+  .aggregate-demo .stages .active .step-active {
+    background-color: rgba(255,255,255,.75);
+  }
+
+  .aggregate-demo.step-by-step .editor-toggle-thumb {
+    left: 40px;
+    background-color: #ce8;
+  }
+
+  .aggregate-demo.step-by-step .editor-container {
+    opacity: 0;
+  }
+  .aggregate-demo.step-by-step .stages {
+    z-index: 2;
+  }
+
+
   </style>
   <link rel="stylesheet" type="text/css" href="rdbms_vs_dodb.css">
   <script src="rdbms_vs_dodb.js" charset="utf-8"></script>
@@ -291,23 +405,178 @@
   </div>
 
   <div class="slide aggregate-demo">
+    <h2 class="top">$match</h2>
     <div class="editor-container">
-      <div id="project_editor" class="editor interactive">
-  db.customers.aggregate([
-    {$match: {'address.zip':'37421'}}
-  ])
-      </div>
+      <div id="match_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {email:'mbrown@example.com'}}
+  ])</div>
     </div>
     <div class="results"></div>
   </div>
 
   <div class="slide aggregate-demo">
+    <h2 class="top">$match nested</h2>
     <div class="editor-container">
-      <div id="unwind_editor" class="editor interactive">
-  db.customers.aggregate([
-    {$project:{_id:0, email:1}}
-  ])
-      </div>
+      <div id="match_nested_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$project</h2>
+    <div class="editor-container">
+      <div id="project_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}},
+    {$project:{_id:0, firstName:1, lastName:1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$project function</h2>
+    <div class="editor-container">
+      <div id="project_function_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}},
+    {$project: {_id:0, name:{$concat:['$firstName',' ','$lastName']}, zip:'$address.zip'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$unwind</h2>
+    <div class="editor-container">
+      <div id="unwind_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {firstName:'Minnie'}},
+    {$unwind: '$purchases'},
+    {$project: {_id:0, date:'$purchases.date', sku:'$purchases.sku'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$unwind visits</h2>
+    <div class="editor-container">
+      <div id="unwind_visits_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {firstName:'Annie'}},
+    {$unwind: '$webVisits'},
+    {$project: {_id:0, date:'$webVisits.date', hits:'$webVisits.hits'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group last name frequency</h2>
+    <div class="editor-container">
+      <div id="group_last_names_editor" class="editor interactive">  db.customers.aggregate([
+    {$group: {_id:'$lastName', count:{$sum:1}}},
+    {$sort: {count:-1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group people with same name</h2>
+    <div class="editor-container">
+      <div id="group_full_name_editor" class="editor interactive">  db.customers.aggregate([
+    {$group: {_id:{first:'$firstName', last:'$lastName'}, count:{$sum:1}}},
+    {$sort: {count:-1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group by zip code</h2>
+    <div class="editor-container">
+      <div id="group_zip_editor" class="editor interactive">  db.customers.aggregate([
+    {$group: {_id:'$address.zip', count:{$sum:1}}},
+    {$sort: {count:-1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group total revenue</h2>
+    <div class="editor-container">
+      <div id="group_total_revenue_editor" class="editor interactive">  db.customers.aggregate([  
+    {$unwind: '$purchases'},
+    {$match: {'purchases.date':{$gte:new Date('2013-08-15')}}},
+    {$group: {_id:'revenue', total:{$sum:'$purchases.amount'}}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group revenue by brand</h2>
+    <div class="editor-container">
+      <div id="group_revenue_by_brand_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {lastName:'Smith'}},
+    {$unwind: '$purchases'},
+    {$match: {'purchases.date':{$gte:new Date('2013-08-01')}}},
+    {$group: {_id:'$purchases.sku', 
+            total:{$sum:'$purchases.amount'}, 
+            brand:{$first:'$purchases.name'}}},
+    {$project: {_id:0, brand:1, total:1}},
+    {$sort: {total:-1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+  
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">customers with more than 5 hits</h2>
+    <div class="editor-container">
+      <div id="more_than_5_hits_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}},
+    {$project: {_id:0, email:1, name:{$concat:['$firstName',' ','$lastName']}, webVisits:1}},
+    {$unwind: '$webVisits'},
+    {$match: {'webVisits.date':{$gte:new Date('2013-08-20')}}},
+    {$group: {_id:'$email', name:{$first:'$name'}, hits:{$sum:'$webVisits.hits'}}},
+    {$match: {hits:{$gte:5}}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">average revenue per visit</h2>
+    <div class="editor-container">
+      <div id="avg_revenue_per_visit_editor" class="editor interactive">  db.customers.aggregate([
+    {$unwind: '$purchases'},
+    {$group: {_id:{email:'$email', date:'$purchases.date'}, total:{$sum:'$purchases.amount'}}},
+    {$group: {_id:'average_revenue', visits:{$sum:1}, revenue:{$sum:'$total'}}},
+    {$project: {_id:0, visits:1, 
+        "average revenue per-person per-visit":{$divide:['$revenue','$visits']}}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">average revenue per visit with website usage</h2>
+    <div class="editor-container">
+      <div id="average_revenue_website_editor" class="editor interactive">  db.customers.aggregate([
+    {$unwind: '$purchases'},
+    {$group: {_id:{email:'$email', date:'$purchases.date'}, 
+            total:{$sum:'$purchases.amount'}, webVisits:{$first:'$webVisits'}}},
+    {$unwind: '$webVisits'},
+    {$project: {_id:1, total:1, matches:{$eq:['$_id.date', '$webVisits.date']}}},
+    {$match: {matches:true}},
+    {$group: {_id:'average_revenue', visits:{$sum:1}, revenue:{$sum:'$total'}}},
+    {$project: {_id:0, visits:1, 
+        "average revenue per-person per-visit":{$divide:['$revenue','$visits']}}}
+  ])</div>
     </div>
     <div class="results"></div>
   </div>
@@ -337,7 +606,7 @@
     for (var i=0,demo; demo = demos[i]; i++) {
       var name = demo.getElementsByClassName('editor')[0].id;
       preso[name] = dma_talk.aggregationDemonstration(demo);
-      preso[name].init();
+      preso[name].init( next, prev );
     }
 
     function removeClass(el, clss) {
@@ -374,8 +643,12 @@
           slide.style.left = document.body.offsetWidth + 'px';
         else if ( i < index )
           slide.style.left = -slide.offsetWidth + 'px';
-        else 
+        else {
           slide.style.left = '0px';
+          var interactive = slide.getElementsByClassName('interactive');
+          for (var j=0, el; el = interactive[j]; j++)
+            preso[el.id].show();
+        }
       }      
     }
 
@@ -392,6 +665,7 @@
       setTimeout(function() { 
         newSlide.style.left = '0px'; 
         oldSlide.style.left = -direction * oldSlide.offsetWidth + 'px' 
+        document.body.scrollLeft = 0;
       }, 1);
       return newSlide;
     }
@@ -416,7 +690,8 @@
       return transition(oldSlide, newSlide, direction, true);
     }
 
-    function next() {
+    function next(e) {
+      console.log("NEXT", e);
       if ( subslides && subSlideIndex < subslides.length - 1 )
         return transition( subslides[subSlideIndex], subslides[++subSlideIndex], 1 );
 
@@ -425,9 +700,11 @@
 
       transitionSlide( slides[slideIndex], slides[++slideIndex], 1 );
       location.hash = slideIndex;
+      return false;
     }
 
-    function prev() {
+    function prev(e) {
+      console.log("back", e);
       if ( subslides && subSlideIndex > 0 )
         return transition( subslides[subSlideIndex], subslides[--subSlideIndex], -1 );
 
@@ -435,6 +712,7 @@
         return;
       transitionSlide( slides[slideIndex], slides[--slideIndex], -1 );
       location.hash = slideIndex;
+      return false;
     }
 
     document.body.addEventListener( 'keyup', function(e) {
