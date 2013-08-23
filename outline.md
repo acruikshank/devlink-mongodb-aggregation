@@ -1,3 +1,63 @@
+Slide: Motivation - Why do we need an aggregation framework? Why do we need MongoDB in the first place, or for that matter why do we need new databases at all?
+
+Slide: SQL / Relational model - 1970s, successful, standardized up through the 1990's
+
+Slide: picture of office workers using computers labeld "SQL" - SQL would be written by people
+
+Slide: picture of server rack - Primary SQL user, writing millions, billions or trillions of SQL statements. Don't know and don't care the grammar mimics English. Doesn't know what the statements mean. They just plug in the values they are given.
+
+Slide: picture Little Johnny Droptables cartoon - Sometimes this causes problems.
+
+That's the NoSql debate, but we're really concerned with the relational model.
+
+Slide: Fully normalized relational schema diagram - Relational model takes relatively flat data structures called tables and builds more complicated structure through relationships (equivalent values in different tables). Fully normalized schemas reduce redundancy and dependency. Explain diagram.
+
+Slide: same picture of office workers with exclamation bubbles. Fully normalized schemas are hard to use. They're difficult to update because a single event might require updating many rows in various places in the database. Difficult to query becaus a single result could require multiple joins.
+
+Slide: fully normalized schema next to object schema with mismatch symbol. Objects in the application do have structure. ORMs can link these up, but configuring the ORM can be a complex task.
+
+Slide: denomalized schema next to application: We can denormalize the schema to better match our data model, but we can't get around the fact that data is still structured in fundamentally different ways. When you hear tales of web-pages that trigger 1000s of requests, this mismatch combined with some mild incompetence is usually to blame.
+
+Slide: schema components are covered by boxes: key value stores. Storing and querying data is easy. With good indices, querying is easy and fast. Application manages the serialization and deserialization of the data in the way it finds most convenient. Perfect solution, until it isn't. No atomic or incremental updates. No queries without an index. No way to process the data without loading an entire collection into memory. We need a database that acts like a key-value store most of the time, but can reach inside and manipulate it when it needs to.
+
+Slide: JSON - The Lowest Common Denominator
+Slide BSON - The Lowest Commoner Denominator
+
+Slide: same as above only application structure is visible under the boxes. labeled MongoDB (Document Oriented Database). Mongo strikes a balance by maintaining some understanding of the data structure.
+
+Slide: example find query
+Slide: example incremental update
+
+Slide: Data processing queries (reporting) - What about reporting. Still key value store at heart. Once it has a set of documents, it can peek inside to further filter them out, or it can update them in place, but these actions are still only acting on individual documents.
+
+Slide: map reduce example. label: Map Reduce - Prior to 2.1 the answer has been Map/Reduce (the magic formula that makes everything scale). Same answer as CouchDB and Riak. You figure out the logic, Mongo will make it scale. Sub-slide "slow". Except the fact that it would run in pararrel on 1000 computers didn't make up for how slow it ran on just one. SpiderMonkey backend was slow and serialiation into and out of JS takes a long time. Main problem is that you would always have to pour the entire collection into it.
+
+Slide: The Aggregation Framework (finally). The aggregation framework makes MongoDB work.
+
+Slide: Aggregate queries:
+    Array of stages
+    Object literal syntax
+    Operate on a single collection.
+
+Slide: example query - I'll explain this later.
+
+Slide: Conceptually, each stage transforms a collection of documents into another collection of documents.
+
+Slide: Collection complexity vs. Document complexity - two axis graph, Multiple lines drawn, each segment represents a stage.
+
+Slide: Best rule for aggregate queries. Always be simplifying.
+
+Slide: The players:
+    $match
+    $project
+    $sort
+    $limit
+    $skip
+    $unwind
+    $group
+
+Into interactive examples
+
 A. Introduction to Speaker
 B. MongoDB - Joys and Challenges of Document Oriented Databases
     1. History and Status of MongoDB

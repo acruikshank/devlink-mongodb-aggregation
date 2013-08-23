@@ -168,7 +168,6 @@ dma_talk.aggregationDemonstration = function(slide) {
   }
 
   function handleKeyUp(e) {
-    console.log('keyup',e);
     if ( e.ctrlKey && e.altKey && e.keyCode == 13 )
       executeQuery( editor.getValue() );
     if ( e.ctrlKey && e.altKey && e.keyCode == 32 )
@@ -176,12 +175,10 @@ dma_talk.aggregationDemonstration = function(slide) {
   }
 
   function init( forward, back ) {
-    var editorId = slide.getElementsByClassName('editor')[0].id;
+    var editorElement = slide.getElementsByClassName('editor')[0];
+    var editorId = editorElement.id;
     editor = ace.edit(editorId);
-//    editor.setTheme("ace/theme/idle_fingers");
     editor.setTheme("ace/theme/merbivore_soft");
-//    editor.setTheme("ace/theme/tomorrow_night");
-//    editor.setTheme("ace/theme/solarized_dark");
     editor.getSession().setMode("ace/mode/javascript");
     editor.getSession().setTabSize(2);
     editor.getSession().setUseSoftTabs(true);
@@ -191,6 +188,18 @@ dma_talk.aggregationDemonstration = function(slide) {
         bindKey: {win: 'Ctrl-Alt-Space',  mac: 'Ctrl-Alt-Space'},
         exec: toggleEditor
     });
+    editor.commands.addCommand({
+        name: 'next',
+        bindKey: {win: 'Ctrl-Right',  mac: 'Ctrl-Right'},
+        exec: function() {console.log('next?',listeners);trigger('next')}
+    });
+    editor.commands.addCommand({
+        name: 'prev',
+        bindKey: {win: 'Ctrl-Left',  mac: 'Ctrl-Left'},
+        exec: function() {console.log('prev?',listeners);trigger('prev')}
+    });
+
+    editorElement.onkeyup = function(e) { e.stopPropagation(); return false; }
 
     slide.addEventListener('keypress', handleKeyUp)
 
@@ -200,9 +209,12 @@ dma_talk.aggregationDemonstration = function(slide) {
 
   function show() { editor.focus() }
   function hide() { 
+    if (editor) editor.blur()
     var results = slide.getElementsByClassName('results')[0]; if (results) results.innerHTML=''; 
-
   }
+  var listeners = {};
+  function addEventListener(type, f) { if (f) (listeners[type]=listeners[type]||[]).push(f); }
+  function trigger(type) { for (var i=0,f; f=(listeners[type]||[])[i];i++) f() }
 
-  return { init: init, show: show, hide: hide }
+  return { init: init, show: show, hide: hide, addEventListener:addEventListener   }
 }

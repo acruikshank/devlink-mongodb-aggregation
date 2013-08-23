@@ -89,7 +89,7 @@
   .slide label.sub-center {
     display: block;
     text-align: center;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: normal;
     margin-top: 40px; 
     position: absolute;  
@@ -154,6 +154,57 @@
     margin-top: 10px;
   }
 
+  .img img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 100%;
+  }
+
+  .caption {
+    position: absolute;
+    z-index: 1;
+    bottom: 15%;
+    left: 15%;
+    font-size: 40px;
+  }
+
+  .caption.right {
+    left: auto;
+    right: 5%;
+    bottom: 0%;    
+  }
+
+  .caption.dark {
+    color: #000;
+    text-shadow: 1px 1px 1px #fff;
+  }
+
+  .caption.light {
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+  }
+
+  .code-container {
+    -webkit-transition: opacity .2s linear;
+    position: absolute;
+    top: 30%;
+    right: 0;
+    height: 40%;
+    left: 0;
+    z-index: 1;
+  }
+
+  .code-container .code {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    left: 0;        
+    font-size: 20px;
+  }
+
   .editor-container {
     -webkit-transition: opacity .2s linear;
     position: absolute;
@@ -163,6 +214,7 @@
     left: 0;
     z-index: 1;
   }
+
   .editor-container .editor {
     position: absolute;
     top: 0;
@@ -326,18 +378,30 @@
     </div>
   </div>
 
-  <div class="slide bulleted">
-    <h2 class="head">MongoDB</h2>
-    <ul class='hidden-points'>
-      <li>Created by 10Gen in 2007 as a PaaS</li>
-      <li>Open Sourced in 2010</li>
-      <li>Current Version is 2.4.5</li>
-      <li>Aggregation Framework introduced in 2.1</li>
-    </ul>
+  <div class="slide">
+    <h2 class="center">Motivation</h2>
   </div>
 
   <div class="slide">
-    <h2 class="center">Motivation for Aggregation Framework</h2>
+    <h2 class="center">SQL and the Relational Model</h2>
+  </div>
+
+  <div class="slide img">
+    <img src="wang1.jpg"/>
+    <h2 class="caption light right">SQL users then</h2>
+  </div>
+
+  <div class="slide img">
+    <img src="server_rack.jpg"/>
+    <h2 class="caption dark left">SQL users today</h2>
+  </div>
+
+  <div class="slide img">
+    <img src="drop_tables.png"/>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">The Relational Model</h2>
   </div>
 
   <div class="slide">
@@ -399,8 +463,62 @@
     <div class="sub-slide">
       <h3>Fully Normalized</h3>
     </div>
-    <div class="sub-slide">
-      <h3>Denormalized</h3>
+  </div>
+
+  <div class="slide img">
+    <img src="wang2.jpg"/>
+  </div>
+
+
+  <div class="slide">
+    <h2 class="center">JSON</h2>
+    <label class="sub-center">The Lowest Common Denominator</label>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">BSON</h2>
+    <label class="sub-center">The Lowest Common-er Denominator</label>
+  </div>
+
+  <div class="slide">
+    <h2 class="head">queries on nested data</h2>
+    <div class="code-container">
+      <div class="code" id="find_example">
+  db.customers.find(
+    { 'address.zip': '37421' }, 
+    { email:1 }
+  )</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="head">atomic partial updates</h2>
+    <div class="code-container">
+      <div class="code" id="update_example">  db.customers.update(
+    {email:'mbrown@example.com'}, 
+    {$set:{'address.zip':'37412'}}
+  )</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">Data Processing Queries</h2>
+    <label class="sub-center">(reporting)</label>
+  </div>
+
+  <div class="slide">
+    <h2 class="head">Map Reduce</h2>
+    <div class="code-container">
+      <div class="code" id="map_reduce_example">  db.customers.mapReduce(
+    function() { 
+      emit( this._id, this.purchases.reduce(function(m,p) { return m+p.amount; }, 0) );
+    },
+    function( key, values ) { return Array.sum( values ) },
+    {
+      query: { status: 'A' },
+      out: "total revenue"
+    }
+  )     </div>
     </div>
   </div>
 
@@ -682,6 +800,10 @@
       var name = demo.getElementsByClassName('editor')[0].id;
       preso[name] = dma_talk.aggregationDemonstration(demo);
       preso[name].init( next, prev );
+      if (preso[name].addEventListener) {
+        preso[name].addEventListener('next',next);
+        preso[name].addEventListener('prev',prev);
+      }
     }
 
     function removeClass(el, clss) {
@@ -709,6 +831,18 @@
       arrangeSlides( subslides, 0 );
     }
 
+    // CODE EXAMPLES
+    var codeExamples = document.getElementsByClassName('code');
+    for (var i=0,ex; ex = codeExamples[i]; i++) {
+      var editor = ace.edit(ex);
+      editor.setReadOnly(true);
+      editor.setTheme("ace/theme/merbivore_soft");
+      editor.getSession().setMode("ace/mode/javascript");
+      editor.getSession().setTabSize(2);
+      editor.setShowPrintMargin(false);  
+    }
+
+
     function arrangeSlides( slides, index, autoHeight ) {
       for (var i=0, slide; slide = slides[i]; i++) {
         slide.style.width = document.body.offsetWidth + 'px';
@@ -720,6 +854,7 @@
           slide.style.left = -slide.offsetWidth + 'px';
         else {
           slide.style.left = '0px';
+          slide.focus();
           var interactive = slide.getElementsByClassName('interactive');
           for (var j=0, el; el = interactive[j]; j++)
             preso[el.id].show();
@@ -736,6 +871,7 @@
       newSlide.style.left = direction * windowWidth + 'px';
       addClass( newSlide, 'transition' );
       addClass( oldSlide, 'transition' );
+      document.body.scrollLeft = 0;
       
       setTimeout(function() { 
         newSlide.style.left = '0px'; 
@@ -790,11 +926,11 @@
       return false;
     }
 
-    document.body.addEventListener( 'keyup', function(e) {
-      if (e.ctrlKey && e.keyCode == 39) {
+    document.body.addEventListener( 'keydown', function(e) {
+      if (e.keyCode == 39) {
         next()
         return false;
-      } else if (e.ctrlKey && e.keyCode == 37) {
+      } else if (e.keyCode == 37) {
         prev()
         return false;
       }
