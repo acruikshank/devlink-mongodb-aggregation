@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>MongoDB Aggregation Presentation</title>
+  <style>
+    html { height: 100%; }
+    body {
+      background-color: rgb(40,40,40);
+      margin: 0;
+      padding: 0;
+      font-family: Futura,Helvetica,Arial,san-serif;
+      color: #eee;
+      overflow: hidden;
+      height: 100%;
+       -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+   }
+
+   .slide {
+     position: absolute;
+     top: 0;
+     color: #eee;
+     overflow: hidden;
+   }
+
+  .slide.transition, .sub-slide.transition {
+    -webkit-transition: left .15s ease;
+  }
+
+  .slide .head {
+    text-align: center;
+    font-size: 48px;
+    font-weight: normal;
+    margin: 60px 0 60px;
+  }
+
+  .slide.bulleted ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .slide.bulleted ul.column-1of2 {
+    display: inline-block;
+    width: 25%;
+    vertical-align: top;
+    margin-left: 25%;
+  }
+
+  .slide.bulleted ul.column-2of2 {
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    margin-left: 10%;
+  }
+
+  .slide.bulleted ul.column-1of3 {
+    font-size: 18px;
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    margin-left: 10%;
+  }
+
+  .slide.bulleted ul.column-2of3 {
+    font-size: 18px;
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    margin-left: 10%;
+  }
+
+  .slide.bulleted ul.column-3of3 {
+    font-size: 18px;
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    margin-left: 10%;
+  }
+
+
+  .slide.bulleted li {
+    font-size: 40px;
+    line-height: 90px;
+    width: 800px;
+    margin: 0 auto;
+  }
+
+  .slide.bulleted.narrow li {
+    width: 400px;
+  }
+
+  .slide.bulleted.wide li {
+    width: 1000px;
+  }
+
+  .slide img {
+    display: block;
+    height: 50%;
+    margin: 0 auto;
+  }
+
+  .slide label.caption {
+    display: block;
+    text-align: center;
+    font-size: 24px;
+    font-weight: normal;
+    margin-top: 40px;    
+  }
+
+  .slide .center {
+    text-align: center;
+    font-size: 60px;
+    font-weight: normal;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    margin-top: -30px;
+    line-height: 60px;
+    height: 60px;
+  }
+
+  .slide label.sub-center {
+    display: block;
+    text-align: center;
+    font-size: 32px;
+    font-weight: normal;
+    position: absolute;  
+    top:50%;
+    width: 100%;
+  }
+
+  .slide label.url {
+    display: block;
+    text-align: center;
+    font-size: 28px;
+    font-weight: normal;
+    position: absolute;  
+    top:-60%;
+    width: 100%;
+  }
+
+  .sub-slide {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+
+  .sub-slide h3 {
+    text-align: center;
+    font-size: 30px;
+    font-weight: normal;
+    margin: 60px 0 60px;
+    color: #ccc;    
+  }
+
+  .title-screen {
+    position: absolute;
+    right: 0px;
+    width: 100%;
+    bottom: 5%;
+  }
+
+  .title-screen h1 {
+    font-size: 64px;
+    font-weight: normal;
+    text-align: center;
+    margin: 0px 0 100px;
+  }
+
+  .title-screen h2.center {
+    position: absolute;
+    font-weight: normal;
+    text-align: center;
+    margin: 0;
+    top: -90%;
+  }
+
+  h2.by_line {
+    font-size: 34px;
+    font-weight: normal;
+    margin: 0 6% 0 0;
+    padding:0 10% 0 0;
+    line-height: 65px;
+    text-align: right;
+  }
+
+  h2.logo {
+    margin: 0;
+    margin: 0 5% 0 0;
+    padding:0;
+    text-align: right;    
+  }
+
+  h2.logo img {
+    height: 100px;
+    display: inline;
+    margin: 0;
+  }
+
+  h2.top {
+    text-align: center;
+    padding-top: 0;
+    margin-top: 10px;
+  }
+
+  h2.center.quote {
+    font-size: 3.5em;
+    line-height: 1.5em;
+    margin: -10% 10% 0;
+  }
+
+  .img img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 100%;
+  }
+
+  .caption {
+    position: absolute;
+    z-index: 1;
+    bottom: 15%;
+    left: 15%;
+    font-size: 40px;
+  }
+
+  .caption.right {
+    left: auto;
+    right: 5%;
+    bottom: 0%;    
+  }
+
+  .caption.dark {
+    color: #000;
+    text-shadow: 1px 1px 1px #fff;
+  }
+
+  .caption.light {
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+  }
+
+  .code-container {
+    -webkit-transition: opacity .2s linear;
+    position: absolute;
+    top: 30%;
+    right: 0;
+    height: 40%;
+    left: 0;
+    z-index: 1;
+  }
+
+  .code-container .code {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    left: 0;        
+    font-size: 20px;
+  }
+
+  .editor-container {
+    -webkit-transition: opacity .2s linear;
+    position: absolute;
+    top: 8%;
+    right: 0;
+    height: 41%;
+    left: 0;
+    z-index: 1;
+  }
+
+  .editor-container .editor {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    left: 0;        
+    font-size: 20px;
+  }
+
+  .results {
+    position: absolute;
+    height: 49%;
+    bottom: 1%;
+    right: 20px;
+    left: 20px;
+    overflow: auto;
+    font-size:16px;
+  }
+
+  .aggregate-demo .stats {
+    text-align: center;
+    padding: .3em .8em;
+    font-size: 20px;
+    position: absolute;
+    bottom: 1%;
+    right: 20px;
+    background: rgba(10,10,10,.85);
+    z-index: 1;
+    border-radius: 6px;
+    border: 1px solid #000;
+  }
+
+
+  .results .result {
+    margin: 0px 0 6px;
+    white-space: nowrap;
+  }
+
+  .results .result:last-child {
+    margin-bottom: 20px;
+  }
+
+  .results .field {
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+  }
+
+  .results .field:last-child {
+    margin-right: 20px;
+  }
+
+  .results label, .aggregate-demo .stats label {
+    padding: 0 .4em 0 1em;
+    color: #cea;
+  }
+
+  .aggregate-demo .stats label {
+    padding-left: 0;
+  }
+
+  .results .disclosure {
+    font-size: 14px;
+    color: #78b;
+    cursor: pointer;
+    display: block;
+    float: right;
+    margin-top: 2px;
+  }
+
+  .results .opened .disclosure {
+    -webkit-transform: rotate(-180deg);
+  }
+
+  .results .toggle {
+    -webkit-transition: width .2s ease, height .5s ease;
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+  }
+
+  .aggregate-demo .editor-toggle {
+    width: 80px;
+    height: 8%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+  }
+
+  .aggregate-demo .editor-toggle-thumb {
+    -webkit-transition: background-color,left .2s ease;
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    margin-top: -6px;
+    top: 50%;
+    left: 0px;
+    background-color: #7ae;
+    border-radius: 6px;
+  }
+
+  .aggregate-demo .stages {
+    position: absolute;
+    top: 8%;
+    right: 0;
+    height: 41%;
+    left: 0;
+  }
+
+  .aggregate-demo .stages .step {
+    background-color: #368;
+    font-size: 18px;
+    padding: .4em 0;    
+    cursor: pointer;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  }
+
+  .aggregate-demo .stages .step:hover {
+    background-color: #479;
+  }
+
+  .aggregate-demo .stages .step-active {
+    display: inline-block;
+    border-radius: 10px;
+    width: 12px;
+    height: 12px;
+    margin: 0 1em 0 2em;
+    border: 2px solid #fff;
+    vertical-align: baseline;
+  }
+  .aggregate-demo .stages .active .step-active {
+    background-color: rgba(255,255,255,.75);
+  }
+
+  .aggregate-demo.step-by-step .editor-toggle-thumb {
+    left: 40px;
+    background-color: #ce8;
+  }
+
+  .aggregate-demo.step-by-step .editor-container {
+    opacity: 0;
+  }
+  .aggregate-demo.step-by-step .stages {
+    z-index: 2;
+  }
+
+
+  </style>
+  <link rel="stylesheet" type="text/css" href="rdbms_vs_dodb.css">
+  <script src="rdbms_vs_dodb.js" charset="utf-8"></script>
+</head>
+<body>
+  <div class="slide">
+    <div class="title-screen">
+      <h1>MongoDB Aggregation Framework</h1>
+      <h2 class="by_line">Alex Cruikshank</h2>
+      <h2 class="by_line">acruikshank@github</h2>
+      <h2 class="by_line">@sivoh</h2>
+      <h2 class="logo"><img src="c5_logo.png"/></h2>      
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">Motivation</h2>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">SQL and the Relational Model</h2>
+  </div>
+
+  <div class="slide img">
+    <img src="wang1.jpg"/>
+    <h2 class="caption light right">SQL users then</h2>
+  </div>
+
+  <div class="slide img">
+    <img src="server_rack.jpg"/>
+    <h2 class="caption dark left">SQL users today</h2>
+  </div>
+
+  <div class="slide img">
+    <img src="drop_tables.png"/>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">The Relational Model</h2>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="normalized">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>Normalized Database Schema</h3>
+    </div>
+  </div>
+
+  <div class="slide img">
+    <img src="wang2.jpg"/>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="normalized-vs-application">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>relational data vs. application data</h3>
+    </div>
+    <div class="sub-slide">
+      <h3>object relational impedance mismatch</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="denormalized">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>Denormalized</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="denormalized-vs-application">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>denormalized is a better fit</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="keyvalue-vs-application">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>key-value store is better still</h3>
+    </div>
+    <div class="sub-slide">
+      <h3>no unindexed queries, no incremental updates, no reporting</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">JSON</h2>
+    <label class="sub-center">The Lowest Common Denominator</label>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">BSON</h2>
+    <label class="sub-center">The Lowest Common-er Denominator</label>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="mongo-vs-application">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>MongoDB (Document Oriented Databases)</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="head">queries on nested data</h2>
+    <div class="code-container">
+      <div class="code" id="find_example">
+  db.customers.find(
+    { 'address.zip': '37421' }, 
+    { email:1 }
+  )</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="head">atomic partial updates</h2>
+    <div class="code-container">
+      <div class="code" id="update_example">  db.customers.update(
+    {email:'mbrown@example.com'}, 
+    {$set:{'address.zip':'37412'}}
+  )</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">Data Processing Queries</h2>
+    <label class="sub-center">(reporting)</label>
+  </div>
+
+  <div class="slide">
+    <h2 class="head">Map Reduce</h2>
+    <div class="code-container">
+      <div class="code" id="map_reduce_example">  db.customers.mapReduce(
+    function() { 
+      emit( this._id, this.purchases.reduce(function(m,p) { return m+p.amount; }, 0) );
+    },
+    function( key, values ) { return Array.sum( values ) },
+    {
+      query: { status: 'A' },
+      out: "total revenue"
+    }
+  )     </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="center">The Aggregation Framework</h2>
+    <label class="sub-center">(finally)</label>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">Aggregate Queries</h2>
+    <ul class='hidden-points'>
+      <li>Array of Stages</li>
+      <li>Object Literal Syntax</li>
+      <li>Operates on a Single Collection</li>
+    </ul>
+  </div>
+
+  <div class="slide">
+    <h2 class="head">Example Query</h2>
+    <div class="code-container">
+      <div class="code" id="update_example">  db.customers.aggregate([
+    {$match: {lastName:'Smith'}},
+    {$unwind: '$purchases'},
+    {$match: {'purchases.date':{$gte:new Date('2013-08-01')}}},
+    {$group: {_id:'$purchases.sku', 
+            total:{$sum:'$purchases.amount'}, 
+            brand:{$first:'$purchases.name'}}},
+    {$project: {_id:0, brand:1, total:1}},
+    {$sort: {total:-1}}
+  ])</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="center quote">Conceptually, each stage transforms a collection into another simpler collection.</h2>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="complexity">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>Collection Complexity vs. Document Complexity</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="complexity-with-queries">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>each stage simplifies in one direction</h3>
+    </div>
+  </div>
+
+
+  <div class="slide">
+    <h2 class="center">Always be simplifying.</h2>
+    <label class="sub-center">(one way or another)</label>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">Stage Commands</h2>
+    <ul class='column-1of2'>
+      <li>$match</li>
+      <li>$skip</li>
+      <li>$sort</li>
+      <li>$group</li>
+    </ul>
+    <ul class='column-2of2'>
+      <li>$project</li>
+      <li>$limit</li>
+      <li>$unwind</li>
+      <li>($geoNear)</li>
+    </ul>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$match</h2>
+    <ul class='hidden-points'>
+      <li>Filter Documents</li>
+      <li>Functional: filter()</li>
+      <li>SQL: where</li>
+    </ul>
+  </div>
+
+  <div class="slide">
+    <h2 class="center quote">Using $match against indexed properties in the first stage is the only way to avoid a collection scan.</h2>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$match</h2>
+    <div class="editor-container">
+      <div id="match_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {email:'mbrown@example.com'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$match nested</h2>
+    <div class="editor-container">
+      <div id="match_nested_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$match operators</h2>
+    <ul class='column-1of3'>
+      <li>$all</li>
+      <li>$gt</li>
+      <li>$gte</li>
+      <li>$in</li>
+      <li>$lte</li>
+    </ul>
+    <ul class='column-2of3'>
+      <li>$ne</li>
+      <li>$nin</li>
+      <li>$or</li>
+      <li>$and</li>
+      <li>$not</li>
+    </ul>
+    <ul class='column-3of3'>
+      <li>$nor</li>
+      <li>$exists</li>
+      <li>$type</li>
+      <li>$where</li>
+      <li>$regex</li>
+    </ul>
+  </div>
+
+
+  <div class="slide bulleted">
+    <h2 class="head">$project</h2>
+    <ul class='hidden-points'>
+      <li>Transform Documents</li>
+      <li>Functional: map()</li>
+      <li>SQL: projection</li>
+    </ul>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$project</h2>
+    <div class="editor-container">
+      <div id="project_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}},
+    {$project:{_id:0, firstName:1, lastName:1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$project function</h2>
+    <div class="editor-container">
+      <div id="project_function_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}},
+    {$project: {_id:0, name:{$concat:['$firstName',' ','$lastName']}, zip:'$address.zip'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$project operators</h2>
+    <ul class='column-1of3'>
+      <li>$cmp</li>
+      <li>$eq</li>
+      <li>$gt</li>
+      <li>$lt</li>
+      <li>$ne</li>
+    </ul>
+    <ul class='column-2of3'>
+      <li>$add</li>
+      <li>$divide</li>
+      <li>$mod</li>
+      <li>$multiply</li>
+      <li>$subtract</li>
+    </ul>
+    <ul class='column-3of3'>
+      <li>$concat</li>
+      <li>$substr</li>
+      <li>$hour</li>
+      <li>$minute</li>
+      <li>$second</li>
+    </ul>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$sort, $skip &amp; $limit</h2>
+    <ul class='hidden-points'>
+      <li>Sort and page documents</li>
+      <li>Functional: sort(), slice()</li>
+      <li>SQL: sort, skip, limit</li>
+      <li>Proper stages</li>
+    </ul>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$sort, $skip, $limit</h2>
+    <div class="editor-container">
+      <div id="limit_skip_sort_editor" class="editor interactive">  var PAGE_SIZE = 5;
+  function sort(field, ascending) {
+    var s = {$sort:{}}; s.$sort[field] = ascending ? 1 : -1; return [s];
+  }
+  function page(pageIndex) {
+    return [ {$skip: pageIndex * PAGE_SIZE}, {$limit: PAGE_SIZE} ]
+  }
+  var fullName = [{$project: {_id:0, name:{$concat:['$firstName',' ','$lastName']}}}];
+  var email = [{$project: {_id:0, email:1}}]
+
+  db.customers.aggregate( fullName.concat(sort('name',1)).concat(page(0)) )</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$unwind</h2>
+    <ul class='hidden-points'>
+      <li>Flatten arrays into multiple documents</li>
+      <li>Functional: flatten</li>
+      <li>SQL: outer join</li>
+      <li>Reduces document complexity</li>
+      <li>Expands collection size</li>
+    </ul>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$unwind</h2>
+    <div class="editor-container">
+      <div id="unwind_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {firstName:'Minnie'}},
+    {$unwind: '$purchases'},
+    {$project: {_id:0, date:'$purchases.date', sku:'$purchases.sku'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$unwind visits</h2>
+    <div class="editor-container">
+      <div id="unwind_visits_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {firstName:'Annie'}},
+    {$unwind: '$webVisits'},
+    {$project: {_id:0, date:'$webVisits.date', hits:'$webVisits.hits'}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$group</h2>
+    <ul class='hidden-points'>
+      <li>Combine multiple documents</li>
+      <li>Functional: reduce</li>
+      <li>SQL: group by + operators</li>
+      <li>Reduces collection size</li>
+      <li>Can increase document complexity</li>
+    </ul>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group last name frequency</h2>
+    <div class="editor-container">
+      <div id="group_last_names_editor" class="editor interactive">  db.customers.aggregate([
+    {$group: {_id:'$lastName', count:{$sum:1}}},
+    {$sort: {count:-1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group people with same name</h2>
+    <div class="editor-container">
+      <div id="group_full_name_editor" class="editor interactive">  db.customers.aggregate([
+    {$group: {_id:{first:'$firstName', last:'$lastName'}, count:{$sum:1}}},
+    {$sort: {count:-1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group by zip code</h2>
+    <div class="editor-container">
+      <div id="group_zip_editor" class="editor interactive">  db.customers.aggregate([
+    {$group: {_id:'$address.zip', count:{$sum:1}}},
+    {$sort: {count:-1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group total revenue</h2>
+    <div class="editor-container">
+      <div id="group_total_revenue_editor" class="editor interactive">  db.customers.aggregate([  
+    {$unwind: '$purchases'},
+    {$match: {'purchases.date':{$gte:new Date('2013-08-15')}}},
+    {$group: {_id:'revenue', total:{$sum:'$purchases.amount'}}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">$group revenue by brand</h2>
+    <div class="editor-container">
+      <div id="group_revenue_by_brand_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {lastName:'Smith'}},
+    {$unwind: '$purchases'},
+    {$match: {'purchases.date':{$gte:new Date('2013-08-01')}}},
+    {$group: {_id:'$purchases.sku', 
+            total:{$sum:'$purchases.amount'}, 
+            brand:{$first:'$purchases.name'}}},
+    {$project: {_id:0, brand:1, total:1}},
+    {$sort: {total:-1}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$group operators</h2>
+    <ul class='column-1of2'>
+      <li>$addToSet</li>
+      <li>$first</li>
+      <li>$last</li>
+      <li>$max</li>
+    </ul>
+    <ul class='column-2of2'>
+      <li>$min</li>
+      <li>$avg</li>
+      <li>$push</li>
+      <li>$sum</li>
+    </ul>
+  </div>
+  
+  <div class="slide">
+    <h2 class="center">More Examples</h2>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">customers with more than 5 hits</h2>
+    <div class="editor-container">
+      <div id="more_than_5_hits_editor" class="editor interactive">  db.customers.aggregate([
+    {$match: {'address.zip':'37421'}},
+    {$project: {_id:0, email:1, name:{$concat:['$firstName',' ','$lastName']}, webVisits:1}},
+    {$unwind: '$webVisits'},
+    {$match: {'webVisits.date':{$gte:new Date('2013-08-20')}}},
+    {$group: {_id:'$email', name:{$first:'$name'}, hits:{$sum:'$webVisits.hits'}}},
+    {$match: {hits:{$gte:5}}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">average revenue per visit</h2>
+    <div class="editor-container">
+      <div id="avg_revenue_per_visit_editor" class="editor interactive">  db.customers.aggregate([
+    {$unwind: '$purchases'},
+    {$group: {_id:{email:'$email', date:'$purchases.date'}, total:{$sum:'$purchases.amount'}}},
+    {$group: {_id:'average_revenue', visits:{$sum:1}, revenue:{$sum:'$total'}}},
+    {$project: {_id:0, visits:1, 
+        "average revenue per-person per-visit":{$divide:['$revenue','$visits']}}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide aggregate-demo">
+    <h2 class="top">average revenue per visit with website usage</h2>
+    <div class="editor-container">
+      <div id="average_revenue_website_editor" class="editor interactive">  db.customers.aggregate([
+    {$unwind: '$purchases'},
+    {$group: {_id:{email:'$email', date:'$purchases.date'}, 
+            total:{$sum:'$purchases.amount'}, webVisits:{$first:'$webVisits'}}},
+    {$unwind: '$webVisits'},
+    {$project: {_id:1, total:1, matches:{$eq:['$_id.date', '$webVisits.date']}}},
+    {$match: {matches:true}},
+    {$group: {_id:'average_revenue', visits:{$sum:1}, revenue:{$sum:'$total'}}},
+    {$project: {_id:0, visits:1, 
+        "average revenue per-person per-visit":{$divide:['$revenue','$visits']}}}
+  ])</div>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <div class="slide">
+    <div class="title-screen">
+      <h2 class="center">Thank You!</h2>
+      <label class="url">http://github.com/acruikshank/devlink-mongodb-aggregation</label>
+      <h2 class="by_line">Alex Cruikshank</h2>
+      <h2 class="by_line">acruikshank@github</h2>
+      <h2 class="by_line">@sivoh</h2>
+      <h2 class="logo"><img src="c5_logo.png"/></h2>      
+    </div>
+  </div>
+
+</body>
+<foot>
+  <script src="aggregateDemonstration.js" type="text/javascript" charset="utf-8"></script>
+  <script src="vendor/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+
+    var slideIndex = 0;
+    var subSlideIndex = 0;
+    var subslides;
+
+    window.onload = function() {
+      var diagrams = document.getElementsByClassName('db-diagram');
+      for (var i=0,diagram; diagram = diagrams[i]; i++)
+        preso.rdbms_vs_dodb.render(diagram.id);
+    }
+
+    var demos = document.getElementsByClassName('aggregate-demo');
+    for (var i=0,demo; demo = demos[i]; i++) {
+      var name = demo.getElementsByClassName('editor')[0].id;
+      preso[name] = dma_talk.aggregationDemonstration(demo);
+      preso[name].init( next, prev );
+      if (preso[name].addEventListener) {
+        preso[name].addEventListener('next',next);
+        preso[name].addEventListener('prev',prev);
+      }
+    }
+
+    function removeClass(el, clss) {
+      var re = new RegExp("^"+clss+"$|^"+clss+"\\s+|\\s+"+clss+"$|\\s+"+clss+"(\\s+)");
+      el.setAttribute( "class", (el.getAttribute('class')||'').replace(re,"$1") )
+    }
+    function addClass(el, clss) {
+      removeClass(el,clss)
+      el.setAttribute( 'class', (el.getAttribute('class') || '') + ' ' + clss )
+    }
+    function hasClass(el, clss) {
+      return !!(el.getAttribute('class')||'').match(new RegExp("(\\s+|^)"+clss+"(\\s+|$)"));
+    }
+
+    if ( location.hash && location.hash.match(/#\d+$/) )
+      slideIndex = +location.hash.match(/#(\d+)$/)[1]
+
+    var slides = document.getElementsByClassName('slide');
+    arrangeSlides( slides, slideIndex, true )
+    subslides = slides[slideIndex].getElementsByClassName('sub-slide');
+    if ( ! subslides.length ) {
+      subslides = null;
+    } else {
+      subSlideIndex = 0;
+      arrangeSlides( subslides, 0 );
+    }
+
+    // CODE EXAMPLES
+    var codeExamples = document.getElementsByClassName('code');
+    for (var i=0,ex; ex = codeExamples[i]; i++) {
+      var editor = ace.edit(ex);
+      editor.setReadOnly(true);
+      editor.setTheme("ace/theme/merbivore_soft");
+      editor.getSession().setMode("ace/mode/javascript");
+      editor.getSession().setTabSize(2);
+      editor.setShowPrintMargin(false);  
+    }
+
+
+    function arrangeSlides( slides, index, autoHeight ) {
+      for (var i=0, slide; slide = slides[i]; i++) {
+        slide.style.width = document.body.offsetWidth + 'px';
+        if ( autoHeight )
+          slide.style.height = document.body.offsetHeight + 'px';
+        if ( i > index )
+          slide.style.left = document.body.offsetWidth + 'px';
+        else if ( i < index )
+          slide.style.left = -slide.offsetWidth + 'px';
+        else {
+          slide.style.left = '0px';
+          slide.focus();
+          var interactive = slide.getElementsByClassName('interactive');
+          for (var j=0, el; el = interactive[j]; j++)
+            preso[el.id].show();
+        }
+      }      
+    }
+
+    function transition( oldSlide, newSlide, direction, adjustHeight ) {
+      var windowWidth = document.body.offsetWidth;
+      removeClass( newSlide, 'transition' );
+      newSlide.style.width = document.body.offsetWidth + 'px';
+      if (adjustHeight)
+        newSlide.style.height = document.body.offsetHeight + 'px';
+      newSlide.style.left = direction * windowWidth + 'px';
+      addClass( newSlide, 'transition' );
+      addClass( oldSlide, 'transition' );
+      document.body.scrollLeft = 0;
+      
+      setTimeout(function() { 
+        newSlide.style.left = '0px'; 
+        oldSlide.style.left = -direction * oldSlide.offsetWidth + 'px' 
+        document.body.scrollLeft = 0;
+      }, 1);
+      return newSlide;
+    }
+
+    function transitionSlide( oldSlide, newSlide, direction ) {
+      var interactive = oldSlide.getElementsByClassName('interactive');
+      for (var i=0, el; el = interactive[i]; i++)
+        preso[el.id].hide();
+
+      interactive = newSlide.getElementsByClassName('interactive');
+      for (var i=0, el; el = interactive[i]; i++)
+        preso[el.id].show();
+
+      subslides = newSlide.getElementsByClassName('sub-slide');
+      if ( ! subslides.length ) {
+        subslides = null;
+      } else {
+        subSlideIndex = ~direction ? 0 : subslides.length - 1;
+        arrangeSlides( subslides, subSlideIndex );
+      }
+
+      return transition(oldSlide, newSlide, direction, true);
+    }
+
+    function next(e) {
+      if ( subslides && subSlideIndex < subslides.length - 1 ) {
+        return transition( subslides[subSlideIndex], subslides[++subSlideIndex], 1 );
+      }
+
+      if ( slideIndex >= slides.length - 1 )
+        return;
+
+      transitionSlide( slides[slideIndex], slides[++slideIndex], 1 );
+      location.hash = slideIndex;
+      return false;
+    }
+
+    function prev(e) {
+      if ( subslides && subSlideIndex > 0 )
+        return transition( subslides[subSlideIndex], subslides[--subSlideIndex], -1 );
+
+      if ( slideIndex < 1 )
+        return;
+      transitionSlide( slides[slideIndex], slides[--slideIndex], -1 );
+      location.hash = slideIndex;
+      return false;
+    }
+
+    document.body.addEventListener( 'keydown', function(e) {
+      if (e.keyCode == 39) {
+        next()
+        return false;
+      } else if (e.keyCode == 37) {
+        prev()
+        return false;
+      }
+    } )
+
+  </script>
+</foot>
+</html>
