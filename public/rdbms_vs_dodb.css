@@ -1,42 +1,85 @@
-#rdbms_vs_dodb {
+.database {
 	position: relative;
+	width: 100%;
 }
 
-#rdbms_vs_dodb .table {
-	border: 1px solid #fff;
-	position: absolute;
-}
-
-#rdbms_vs_dodb .table ul {
-		margin: 0;
-		padding: 0 0 8px 0;
-		list-style: none;
-}
-
-#rdbms_vs_dodb .table li {
-	padding: 0 1em;
-	font-size: 18px;
-}
-
-#rdbms_vs_dodb .table li.title {
-	border-bottom: 1px solid #fff;
-	margin-bottom: 8px;
-	line-height: 40px;
-}
-
-#rdbms_vs_dodb svg path {
+.database svg .connector {
   stroke: #fff;
   stroke-width: 2px;
   stroke-linecap: round;
   fill: none;
 }
 
-#rdbms_vs_dodb .company {	left: 40px;	top: 100px; }
-#rdbms_vs_dodb .comp_cust {	left: 420px;	top: 40px; }
-#rdbms_vs_dodb .customer {	left: 800px;	top: 100px; }
+.database svg .container {
+  stroke: #fff;
+  stroke-width: 1px;
+  fill: none;
+}
 
-#rdbms_vs_dodb .comp_prod {	left: 220px;	top: 250px; }
-#rdbms_vs_dodb .product {	left: 440px;	top: 300px; }
-#rdbms_vs_dodb .prod_cust {	left: 600px;	top: 250px; }
+.database svg .no-orm {
+  stroke: #f00;
+  stroke-width: 5px;
+  fill: none;
+  opacity: .8;
+}
+
+.database svg .collection rect, .database svg .collection line {
+  stroke: #fff;
+  stroke-width: 1px;
+  fill: #111;
+}
+
+.database svg text {
+  fill: #fff;
+  font-size: 18px;
+  text-align: left;
+  padding-left: 8px;
+}
+
+.database svg .header {
+  font-size: 24px;
+}
+
+.database svg .orm {
+  font-size: 34px;
+  letter-spacing: 10px;
+}
+
+.database svg .table rect, .database svg .table line {
+  stroke: #fff;
+  stroke-width: 2px;
+  fill: #333;
+}
+
+.database svg .axis {
+  stroke: #fff;
+  stroke-width: 2px;
+}
+
+.database svg .arrow, .database svg .point {
+  fill: #fff;
+  stroke: none;
+}
+
+.database svg .query {
+  stroke: #dc6;
+  stroke-width:2px;
+  fill: none;
+}
+
+
+.database svg .axis-label {
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+
+.database .company {	left: 40px;	top: 100px; }
+.database .comp_cust {	left: 420px;	top: 40px; }
+.database .customer {	left: 800px;	top: 100px; }
+
+.database .comp_prod {	left: 220px;	top: 250px; }
+.database .product {	left: 440px;	top: 300px; }
+.database .prod_cust {	left: 600px;	top: 250px; }
 
 

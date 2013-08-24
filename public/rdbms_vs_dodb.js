@@ -1,10 +1,16 @@
-(preso = window.preso || {}).rdbms_vs_dodb = (function() {
-  var el;
-
+ (preso = window.preso || {}).rdbms_vs_dodb = (function rdbms_vs_dodb(diagramSpec) {
   function gen(type,attributes) {
-    var el = document.createElementNS("http://www.w3.org/2000/svg",type);
+    var el = document.createElementNS("http://www.w3.org/2000/svg",type), chain;
     if (attributes) for (var key in attributes) el.setAttribute(key,attributes[key]);
-    return el;
+    return chain = {
+      el: function() { return el },
+      add: function() { 
+        for (var i=0,l=arguments.length; e=arguments[i],i<l; i++) el.appendChild(e.el?e.el():e); 
+        return chain;
+      },
+      addAll: function(a) { return chain.add.apply(chain,a) },
+      text: function(t) { el.appendChild(document.createTextNode(t)); return chain; }
+    }
   }
 
   function removeClass(el, clss) {
@@ -28,156 +34,260 @@
     };
   }
 
-  var xEasing = yEasing = splinef(.2,.2,.8,.8);
-  var scrolling, animationKey;
-  var requestAnimationFrame = window.requestAnimationFrame 
-    || window.webkitRequestAnimationFrame || mozRequestAnimationFrame || msRequestAnimationFrame;
-
-
   function diagonal(p1,p2) {
     if ( p2.x <= p1.x ) return "M0,0Z";
     var m1 = p1.x+.25*(p2.x - p1.x), m2 = p1.x+.75*(p2.x - p1.x);
     return 'M'+p1.x+' '+p1.y+'C'+[m2,p1.y,m1,p2.y,p2.x,p2.y].join(' ')
   }
 
-  function startScrolling() {
-    var length = target.length;
-    yEasing = splinef(.2,.2,.8,.8);
-    scrolling = true;
-    (function scroll() {
-      if (( ! scrolling ) || ( bestChild[1] >= length ))
-        return step(function() { scrolling = false });
-      step(scroll);
-    })()      
+  function line(cls,from,to) {
+    return gen('line', {class:cls, x1:from.x, y1:from.y, x2:to.x, y2:to.y })
   }
 
-  function step(done) {
-    var length = target.length;
-    if ( bestChild[1] >= length ) {
-      removeClass( el('starter'),'ready')
-      return;
+  function path(cls,from,to) {
+    return gen('path', {class:cls, d:diagonal(from, to) })
+  }
+
+  var gridLength = 60;
+  var textHeight = 24;
+  var margin = 10;
+  var boxLength = 2.2*gridLength;
+  var stackOffsetY = .2*gridLength;
+  var stackOffsetX = .1*gridLength;
+
+  var specs = {
+    normalized: {
+      tables: [
+        {name:'Company', props:['name','established','...'],               x:0, y:0 },
+        {name:'Employee', props:['company_id','person_id'],                x:4, y:0 },
+        {name:'Person', props:['name','email','...'],                      x:8, y:0},
+        {name:'Comp_Prod', props:['company_id','product_id'],              x:4, y:4},
+        {name:'Product', props:['name','sku','price','...'],               x:8, y:4},
+        {name:'Purchase', props:['product_id','customer_id','seller_id','price','date'], x:12, y:4}
+      ],
+      paths: [[0,1], [1,2], [0,3], [3,4], [4,5], [2,5,-1], [2,5,1]]
+    },
+
+    denormalized: {
+      tables: [
+        {name:'Company', props:['name','established','...'],              x:0, y:2 },
+        {name:'Employee', props:['company_id','name','email','...'],      x:4, y:0 },
+        {name:'Purchase', props:['company_id','customer_id', 'emp_name', 'sku', 'price', '...'],              
+                                                                          x:8, y:2},
+        {name:'Customer', props:['name','email','...'],                   x:12, y:0}
+      ],
+      paths: [[0,1],[0,2],[2,3]]
+    },
+
+    'application': {
+      tables: [
+        {name:'Company', props:['name','established','...'],              x:0, y:0 },
+        {name:'Employee', props:['company_id','name','email','...'],      x:4, y:.1, stack:5 },
+        {name:'Customer', props:['name','email','...'],                   x:0, y:5},
+        {name:'Purchase', props:['company_id','customer_id', 'emp_name', 'sku', 'price', '...'],
+                                                                          x:4, y:5.1, stack:5},
+      ],
+      paths: [[0,1],[2,3]]      
+    },
+    'application2': {
+      tables: [
+        {name:'Company', props:['name','established','...'],              x:0, y:0 },
+        {name:'Employee', props:['company_id','name','email','...'],      x:4, y:.1, stack:5 },
+        {name:'Customer', props:['name','email','...'],                   x:0, y:5.5},
+        {name:'Purchase', props:['company_id','customer_id', 'emp_name', 'sku', 'price', '...'],
+                                                                          x:4, y:5.5, stack:5},
+      ],
+      paths: [[0,1],[2,3]]      
+    }    
+  }
+
+  function map(a,f) { for(var i=0,x,o=[];x=a[i];i++) o[i]=f(x,i); return o; }
+
+  function tableHeight(spec) { return textHeight*(1+spec.props.length) + 2*margin; }
+
+  function table(spec) {
+    for (var j=0,tables = []; j<(spec.stack||1); j++) {
+      var x = spec.x*gridLength + j*stackOffsetX, y = spec.y*gridLength + j*stackOffsetY;
+      tables.push( gen('g', {class:'table', transform: 'translate('+x+','+y+')'}).add(
+        gen('rect',{x:0,y:0, width:boxLength, height:tableHeight(spec) }),
+        gen('text',{class:"name", x:margin, y:textHeight, width:boxLength}).text(spec.name),
+        gen('line',{class:"sep", x1:0, y1:textHeight+margin, x2:boxLength, y2:textHeight+margin})
+      ).addAll(map(spec.props, function(p,i) {
+        return gen('text',{class:"prop", x:margin, y:margin+(2+i)*textHeight, width:boxLength}).text(p)
+      })))
     }
-    generation = nextGeneration( generation[bestChild[0]] );
-    generationIndex++;
-
-    var group = renderGeneration(generation, target, bestChild[0], generationIndex);
-    if (document.getElementById('search-choices'))
-      document.getElementById('search-choices').innerHTML = commaFormat(generationIndex*GEN_SIZE);
-
-    animateGeneration(group, generation, bestChild[0], generationIndex, function() {
-      if ( generationIndex >= 5 ) {
-        var groups = el('solutions').getElementsByTagName('g');
-        var group = groups[generationIndex-5];
-        while (group.childNodes[0]) group.removeChild(group.childNodes[0]);
-      }
-      if (done) done();
-    })
-    bestChild = best(generation, target);      
+    return tables.length == 1 ? tables[0].el() : gen('g',{class:'stack'}).addAll(tables).el();
   }
 
-  function animateGeneration(group, generation, bestChildIndex, generationIndex, done) {
-    var start = new Date().getTime();
-    animationKey = new Object();
-    var localKey = animationKey;
-    requestAnimationFrame(function animate() { 
-      var time = new Date().getTime();
-      var fraction = (time-start) / STEP_MS;
-      if ((localKey !== animationKey) || (fraction >= 1)) {
-        moveGeneration(group, generation, bestChildIndex, 1, generationIndex)
-        animationKey = null;
-        if ( done ) done();
-        return;
-      }
-      moveGeneration(group, generation, bestChildIndex, fraction, generationIndex)
-      requestAnimationFrame(animate);
-    });
+  function transform(el, x, y, scale) { 
+    el.setAttribute('transform','translate('+x+','+y+') scale('+scale+','+scale+')');
+    return el;
   }
 
-  function positionX(index) { return 80 + index*110; };
-
-  function moveGeneration(group, generation, bestChildIndex, fraction, generationIndex) {
-    var bestChildX = positionX( bestChildIndex )
-    var bestChildY = 15 + 2*Y_DISPLACEMENT;
-    var y = Y_DISPLACEMENT * yEasing(fraction)
-    var paths = group.getElementsByTagName('path');
-    var text = group.getElementsByClassName('solution');
-
-    var label = group.getElementsByClassName('label')[0];
-    label.setAttribute('opacity',fraction)
-    label.setAttribute('y',bestChildY + y)
-
-    for ( var i=0,l=generation.length; i < l; i++ ) {
-      var x = positionX(bestChildIndex + 1 * (i-bestChildIndex));
-      paths[i].setAttribute('d',diagonal(bestChildX,bestChildY+3, x, bestChildY + y-15))
-      text[i].setAttribute('x', x);
-      text[i].setAttribute('y', bestChildY + y);
-      text[i].setAttribute('fill-opacity',fraction)
+  function connect(tables, p) {
+    var table1 = tables[p[0]];
+    var table2 = tables[p[1]];
+    var yoffset = (p[2]||0) * textHeight;
+    if (table1.y==table2.y) {
+      var height = table1.y*gridLength + Math.min(tableHeight(table1),tableHeight(table2))/2 + yoffset;
+      return line('connector', {x:table1.x*gridLength + boxLength, y:height}, {x:table2.x*gridLength, y:height})
+    } else {
+      return path('connector', 
+        {x:table1.x*gridLength + boxLength, y:table1.y*gridLength + tableHeight(table1)/2 + yoffset}, 
+        {x:table2.x*gridLength, y:table2.y*gridLength + tableHeight(table2)/2 + yoffset})
     }
-    var groups = el('solutions').getElementsByTagName('g');
-    for (var i=0; g = groups[i]; i++)
-      g.setAttribute('transform','translate(0,'+((i+2-generationIndex)*Y_DISPLACEMENT - y)+')')
   }
 
-  function renderGeneration(generation, target, bestChildIndex, generationIndex) {
-    var y = 15 + 3 * Y_DISPLACEMENT;
-    var container = gen('g',{x:0,y:0})
-    for (var i=0,solution; solution = generation[i]; i++) {
-      if ( bestChildIndex >= 0 ) {
-        var path = gen('path',{})
-        container.appendChild(path);
+  function diagram( spec ) {
+    return gen('g', {class:'diagram'})
+      .addAll( map(spec.tables, function(t) {return table(t)} ) )
+      .addAll( map(spec.paths, function(p) { return connect(spec.tables, p) }) )
+  }
+
+  function collection( name, x, y ) {
+    return gen('g',{class:'collection', transform:'translate('+x+','+y+')'}).add(
+      gen('rect',{class:'collection', width:14*gridLength, height:4.5*gridLength}),
+      gen('text',{class:"name", x:2*margin, y:textHeight, width:boxLength}).text(name),
+      gen('line',{class:"sep", x1:0, y1:textHeight+margin, x2:14*gridLength, y2:textHeight+margin}),
+      gen('line',{class:"sep", x1:boxLength, y1:textHeight+margin, x2:boxLength, y2:4.5*gridLength}),
+      gen('text',{class:"prop", x:2*margin, y:4.5*gridLength/2, width:boxLength}).text('key')
+    )
+  }
+
+  function keyValueStore() {
+    return gen('g', {class:'diagram'}).add(
+      collection('Company', 0, 0),
+      collection('Customer', 0, 5*gridLength))
+  }
+
+  function normalized( svg ) {
+    var d = diagram(specs['normalized']).el();
+    var scale = .8 * svg.offsetWidth / (14*gridLength);
+    var x = .1 * svg.offsetWidth;
+    var y = .1 * svg.offsetHeight;
+    svg.appendChild( transform(d, x, y, scale ) );
+  }
+
+  function denormalized( svg ) {
+    var d = diagram(specs['denormalized']).el();
+    var scale = .8 * svg.offsetWidth / (14*gridLength);
+    var x = .1 * svg.offsetWidth;
+    var y = .1 * svg.offsetHeight;
+    svg.appendChild( transform(d, x, y, scale ) );
+  }
+
+  function databaseApplication( svg, dbdiagram, noOrm ) {
+    var boxx = .025*svg.offsetWidth, boxy = .05*svg.offsetHeight, 
+        boxwidth = .5*svg.offsetWidth, boxheight = .7*svg.offsetHeight;
+
+    svg.appendChild( gen('rect',{class:'container', x:boxx, y:boxy, width:boxwidth, height:boxheight, rx:5, ry:5}).el() )  
+    svg.appendChild( gen('text',{class:"header", 'text-anchor':'middle', x:boxx+boxwidth/2, y:boxy + 40})
+      .text('database').el() );
+
+    boxx = .7*svg.offsetWidth;
+    boxwidth = .275*svg.offsetWidth;
+
+    svg.appendChild( gen('rect',{class:'container', x:boxx, y:boxy, width:boxwidth, height:boxheight, rx:5, ry:5}).el() )  
+    svg.appendChild( gen('text',{class:"header", 'text-anchor':'middle', x:boxx+boxwidth/2, y:boxy + 40})
+      .text('application').el() );
+
+    var cx = .612*svg.offsetWidth, cy = boxy + boxheight/2;
+    svg.appendChild( gen('text',{class:"orm", 'text-anchor':'middle', x:cx, y:cy+10}).text('ORM').el() );
+    if (noOrm) {
+      var r = 70, diag=r/Math.sqrt(2);
+      svg.appendChild( gen('circle',{class:"no-orm", cx:cx, cy:cy, r:r}).el() );
+      svg.appendChild( gen('line',{class:"no-orm", x1:cx+diag, y1:cy-diag, x2:cx-diag, y2:cy+diag}).el() );
+    } 
+
+    var scale = .45 * svg.offsetWidth / (14*gridLength);
+    var x = .05 * svg.offsetWidth;
+    var y = .2 * svg.offsetHeight;
+    svg.appendChild( transform(dbdiagram, x, y, scale ) );
+    var x = .725 * svg.offsetWidth;
+    var d = diagram(specs['application']).el();
+    svg.appendChild( transform(d, x, y, scale ) );
+  }
+
+
+  function normalizedApplication( svg ) { databaseApplication( svg, diagram(specs['normalized']).el() ); }
+  function denormalizedApplication( svg ) { databaseApplication( svg, diagram(specs['denormalized']).el() ); }
+  function keyValueApplication( svg ) { databaseApplication( svg, keyValueStore().el(), true ); }
+
+  function mongoApplication( svg ) { 
+    databaseApplication( svg, keyValueStore().el(), true );
+    var scale = .4 * svg.offsetWidth / (14*gridLength);
+    var x = .2 * svg.offsetWidth;
+    var y = .245 * svg.offsetHeight;
+    var d = diagram(specs['application2']).el();
+    svg.appendChild( transform(d, x, y, scale ) );
+  }
+
+
+  function complexityGraph(withQueries) {
+    var top=gridLength, left=gridLength, right=12*gridLength, bottom=6*gridLength;
+    var twidth = .1*gridLength, tlength = .2*gridLength;
+    var graph =  gen('g',{class:'graph'}).add(
+      gen('line',{class:"axis", x1:left, y1:top, x2:left, y2:bottom}),
+      gen('polygon',{class:"arrow", points:[left,top-tlength,left-twidth,top,left+twidth,top].join(',')}),
+      gen('line',{class:"axis", x1:left, y1:bottom, x2:right, y2:bottom}),
+      gen('polygon',{class:"arrow", points:[right+tlength,bottom,right,bottom-twidth,right,bottom+twidth].join(',')}),
+      gen('text',{class:"axis-label", 'text-anchor':'middle', x:7*gridLength, y:bottom+25})
+        .text('collection complexity'),
+      gen('text',{class:"axis-label", 'text-anchor':'middle', x:left-10, y:top+(bottom-top)/2, 
+        transform:'rotate(-90 '+(left-10)+', '+(top+(bottom-top)/2)+')'})
+        .text('document complexity')
+
+    )
+
+    if (withQueries) {
+      function queryPath() {
+        for (var i=0,parts=[]; i<arguments.length;i+=2)
+          parts.push((left+arguments[i]*(right-left))+','+(top+arguments[i+1]*(bottom-top)))
+        return parts;
       }
-      var genLabel = gen('text',{class:'label', x: 5, y:y, opacity:~bestChildIndex?0:1});
-      genLabel.appendChild( document.createTextNode(String(generationIndex)) );
-      container.appendChild(genLabel); 
 
-      var position = bestChildIndex < 0 ? i : bestChildIndex;
-      var text = gen('text',{class:'solution', x: positionX( position ), y:y});
-      for (var j=0, grouping=groupLetters(solution,target), correct=false; group=grouping[j]; j++, correct=!correct) {
-        var tspan = gen('tspan',{class:correct?'correct':'incorrect'});
-        tspan.appendChild( document.createTextNode(group.join('')) )
-        text.appendChild(tspan);
-      }
-      container.appendChild(text);
+      graph.add(gen('polyline',{class:'query', points:queryPath(1,0,.5,.75,0,.75)}))
+      graph.add(gen('polyline',{class:'query', points:queryPath(1,0,.8,-.1,.2,.2,.2,1)}))
+      graph.add(gen('polyline',{class:'query', points:queryPath(1,0,1.1,.9,.6,.9)}))
+      graph.add(gen('polyline',{class:'query', points:queryPath(1,0,.6,.3,.2,.85,0,1)}))
     }
-    el('solutions').insertBefore(container, el('solutions-top'));
-    return container;
+
+    graph.add(gen('circle',{class:'point', cx:right, cy:top, r:6}))
+    return graph;
   }
 
-  function commaFormat(n) {
-    var formated = '';
-    while (n >= 1000) {
-      formated = ',' + String(1000+n%1000).substring(1) + formated;
-      n = Math.floor(n/1000);
-    }
-    return n + formated;
+  function complexity( svg ) {
+    var d = complexityGraph().el();
+
+    var scale = .8 * svg.offsetWidth / (14*gridLength);
+    var x = .1 * svg.offsetWidth;
+    var y = .1 * svg.offsetHeight;
+    svg.appendChild( transform(d, x, y, scale ) );
   }
 
-  function leftMiddle(el) { return { x:el.offsetLeft + el.offsetWidth, y:el.offsetTop + el.offsetHeight/2 } }
-  function rightMiddle(el) { return { x:el.offsetLeft, y:el.offsetTop + el.offsetHeight/2 } }
+  function complexityWithQueries( svg ) {
+    var d = complexityGraph(true).el();
 
-  function path(svg,cls,from,to) {
-    svg.appendChild(
-      gen('path', {class:cls, d:diagonal(leftMiddle(el(from)), rightMiddle(el(to))) }) );    
+    var scale = .8 * svg.offsetWidth / (14*gridLength);
+    var x = .1 * svg.offsetWidth;
+    var y = .1 * svg.offsetHeight;
+    svg.appendChild( transform(d, x, y, scale ) );
   }
 
-  function init() {
-    var vis = document.getElementById('rdbms_vs_dodb');
-    el = function el(clss) { return vis.getElementsByClassName(clss)[0]; }
-    var svg = vis.getElementsByTagName('svg')[0];
-
-    path(svg, 'cy-to-cc', 'company', 'comp_cust' );
-    path(svg, 'cc-to-ct', 'comp_cust', 'customer' );
-    path(svg, 'cy-to-cp', 'company', 'comp_prod' );
-    path(svg, 'cp-to-p', 'comp_prod', 'product' );
-    path(svg, 'p-to-pc', 'product', 'prod_cust' );
-    path(svg, 'pc-to-ct', 'prod_cust', 'customer' );
+  function render(visId) {
+    var vis = document.getElementById(visId);
+    var diagrams = {
+      normalized:normalized, 
+      denormalized:denormalized,
+      'normalized-vs-application': normalizedApplication,
+      'denormalized-vs-application': denormalizedApplication,
+      'keyvalue-vs-application': keyValueApplication,
+      'mongo-vs-application': mongoApplication,
+      'complexity': complexity,
+      'complexity-with-queries': complexityWithQueries
+    };
+    if (diagrams[visId]) diagrams[visId](vis);
   }
 
-  function hide() {
-  }
-
-  function show() {
-  }
-
-  return {init:init, show:show, hide:hide};
-})();
+  return {render:render};
+})()

@@ -44,6 +44,45 @@
     list-style: none;
   }
 
+  .slide.bulleted ul.column-1of2 {
+    display: inline-block;
+    width: 25%;
+    vertical-align: top;
+    margin-left: 25%;
+  }
+
+  .slide.bulleted ul.column-2of2 {
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    margin-left: 10%;
+  }
+
+  .slide.bulleted ul.column-1of3 {
+    font-size: 18px;
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    margin-left: 10%;
+  }
+
+  .slide.bulleted ul.column-2of3 {
+    font-size: 18px;
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    margin-left: 10%;
+  }
+
+  .slide.bulleted ul.column-3of3 {
+    font-size: 18px;
+    display: inline-block;
+    width: 20%;
+    vertical-align: top;
+    margin-left: 10%;
+  }
+
+
   .slide.bulleted li {
     font-size: 40px;
     line-height: 90px;
@@ -91,11 +130,19 @@
     text-align: center;
     font-size: 32px;
     font-weight: normal;
-    margin-top: 40px; 
     position: absolute;  
     top:50%;
     width: 100%;
-    margin-top: 40px;
+  }
+
+  .slide label.url {
+    display: block;
+    text-align: center;
+    font-size: 28px;
+    font-weight: normal;
+    position: absolute;  
+    top:-60%;
+    width: 100%;
   }
 
   .sub-slide {
@@ -126,6 +173,14 @@
     margin: 0px 0 100px;
   }
 
+  .title-screen h2.center {
+    position: absolute;
+    font-weight: normal;
+    text-align: center;
+    margin: 0;
+    top: -90%;
+  }
+
   h2.by_line {
     font-size: 34px;
     font-weight: normal;
@@ -152,6 +207,12 @@
     text-align: center;
     padding-top: 0;
     margin-top: 10px;
+  }
+
+  h2.center.quote {
+    font-size: 3.5em;
+    line-height: 1.5em;
+    margin: -10% 10% 0;
   }
 
   .img img {
@@ -405,63 +466,12 @@
   </div>
 
   <div class="slide">
-    <div id="rdbms_vs_dodb" class="interactive">
-      <div class="database">
-        <svg class="lines">
-          <path class="c-to-e"></path>
-        </svg>
-        <div class="table company">
-          <ul>
-            <li class="title">Company</li>
-            <li>name</li>
-            <li>established</li>
-          </ul>
-        </div>
-        <div class="table comp_cust">
-          <ul>
-            <li class="title">Employee</li>
-            <li>company_id</li>
-            <li>person_id</li>
-          </ul>
-        </div>
-        <div class="table customer">
-          <ul>
-            <li class="title">Person</li>
-            <li>name</li>
-            <li>email</li>
-          </ul>
-        </div>
-        <div class="table product">
-          <ul>
-            <li class="title">Product</li>
-            <li>name</li>
-            <li>sku</li>
-            <li>price</li>
-          </ul>
-        </div>
-        <div class="table comp_prod">
-          <ul>
-            <li class="title">Comp_prod</li>
-            <li>company_id</li>
-            <li>product_id</li>
-          </ul>
-        </div>
-        <div class="table prod_cust">
-          <ul>
-            <li class="title">Purchase</li>
-            <li>product_id</li>
-            <li>person_id</li>
-            <li>price</li>
-            <li>date</li>
-          </ul>
-        </div>
-      </div>
+    <div class="database">
+      <svg class="db-diagram" id="normalized">
+      </svg>
     </div>
     <div class="sub-slide">
-      <h3>Relational Database Theory</h3>
-    </div>
-    <div class="sub-slide">
-      <h3>Fully Normalized</h3>
+      <h3>Normalized Database Schema</h3>
     </div>
   </div>
 
@@ -469,6 +479,51 @@
     <img src="wang2.jpg"/>
   </div>
 
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="normalized-vs-application">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>relational data vs. application data</h3>
+    </div>
+    <div class="sub-slide">
+      <h3>object relational impedance mismatch</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="denormalized">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>Denormalized</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="denormalized-vs-application">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>denormalized is a better fit</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="keyvalue-vs-application">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>key-value store is better still</h3>
+    </div>
+    <div class="sub-slide">
+      <h3>no unindexed queries, no incremental updates, no reporting</h3>
+    </div>
+  </div>
 
   <div class="slide">
     <h2 class="center">JSON</h2>
@@ -478,6 +533,16 @@
   <div class="slide">
     <h2 class="center">BSON</h2>
     <label class="sub-center">The Lowest Common-er Denominator</label>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="mongo-vs-application">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>MongoDB (Document Oriented Databases)</h3>
+    </div>
   </div>
 
   <div class="slide">
@@ -523,7 +588,79 @@
   </div>
 
   <div class="slide">
-    <h2 class="center">Commands</h2>
+    <h2 class="center">The Aggregation Framework</h2>
+    <label class="sub-center">(finally)</label>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">Aggregate Queries</h2>
+    <ul class='hidden-points'>
+      <li>Array of Stages</li>
+      <li>Object Literal Syntax</li>
+      <li>Operates on a Single Collection</li>
+    </ul>
+  </div>
+
+  <div class="slide">
+    <h2 class="head">Example Query</h2>
+    <div class="code-container">
+      <div class="code" id="update_example">  db.customers.aggregate([
+    {$match: {lastName:'Smith'}},
+    {$unwind: '$purchases'},
+    {$match: {'purchases.date':{$gte:new Date('2013-08-01')}}},
+    {$group: {_id:'$purchases.sku', 
+            total:{$sum:'$purchases.amount'}, 
+            brand:{$first:'$purchases.name'}}},
+    {$project: {_id:0, brand:1, total:1}},
+    {$sort: {total:-1}}
+  ])</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <h2 class="center quote">Conceptually, each stage transforms a collection into another simpler collection.</h2>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="complexity">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>Collection Complexity vs. Document Complexity</h3>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="database">
+      <svg class="db-diagram" id="complexity-with-queries">
+      </svg>
+    </div>
+    <div class="sub-slide">
+      <h3>each stage simplifies in one direction</h3>
+    </div>
+  </div>
+
+
+  <div class="slide">
+    <h2 class="center">Always be simplifying.</h2>
+    <label class="sub-center">(one way or another)</label>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">Stage Commands</h2>
+    <ul class='column-1of2'>
+      <li>$match</li>
+      <li>$skip</li>
+      <li>$sort</li>
+      <li>$group</li>
+    </ul>
+    <ul class='column-2of2'>
+      <li>$project</li>
+      <li>$limit</li>
+      <li>$unwind</li>
+      <li>($geoNear)</li>
+    </ul>
   </div>
 
   <div class="slide bulleted">
@@ -532,8 +669,11 @@
       <li>Filter Documents</li>
       <li>Functional: filter()</li>
       <li>SQL: where</li>
-      <li>$match is always first the stage!</li>
     </ul>
+  </div>
+
+  <div class="slide">
+    <h2 class="center quote">Using $match against indexed properties in the first stage is the only way to avoid a collection scan.</h2>
   </div>
 
   <div class="slide aggregate-demo">
@@ -555,6 +695,32 @@
     </div>
     <div class="results"></div>
   </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$match operators</h2>
+    <ul class='column-1of3'>
+      <li>$all</li>
+      <li>$gt</li>
+      <li>$gte</li>
+      <li>$in</li>
+      <li>$lte</li>
+    </ul>
+    <ul class='column-2of3'>
+      <li>$ne</li>
+      <li>$nin</li>
+      <li>$or</li>
+      <li>$and</li>
+      <li>$not</li>
+    </ul>
+    <ul class='column-3of3'>
+      <li>$nor</li>
+      <li>$exists</li>
+      <li>$type</li>
+      <li>$where</li>
+      <li>$regex</li>
+    </ul>
+  </div>
+
 
   <div class="slide bulleted">
     <h2 class="head">$project</h2>
@@ -585,6 +751,31 @@
   ])</div>
     </div>
     <div class="results"></div>
+  </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$project operators</h2>
+    <ul class='column-1of3'>
+      <li>$cmp</li>
+      <li>$eq</li>
+      <li>$gt</li>
+      <li>$lt</li>
+      <li>$ne</li>
+    </ul>
+    <ul class='column-2of3'>
+      <li>$add</li>
+      <li>$divide</li>
+      <li>$mod</li>
+      <li>$multiply</li>
+      <li>$subtract</li>
+    </ul>
+    <ul class='column-3of3'>
+      <li>$concat</li>
+      <li>$substr</li>
+      <li>$hour</li>
+      <li>$minute</li>
+      <li>$second</li>
+    </ul>
   </div>
 
   <div class="slide bulleted">
@@ -722,6 +913,22 @@
     </div>
     <div class="results"></div>
   </div>
+
+  <div class="slide bulleted">
+    <h2 class="head">$group operators</h2>
+    <ul class='column-1of2'>
+      <li>$addToSet</li>
+      <li>$first</li>
+      <li>$last</li>
+      <li>$max</li>
+    </ul>
+    <ul class='column-2of2'>
+      <li>$min</li>
+      <li>$avg</li>
+      <li>$push</li>
+      <li>$sum</li>
+    </ul>
+  </div>
   
   <div class="slide">
     <h2 class="center">More Examples</h2>
@@ -776,7 +983,8 @@
 
   <div class="slide">
     <div class="title-screen">
-      <h1>Thank You!</h1>
+      <h2 class="center">Thank You!</h2>
+      <label class="url">http://github.com/acruikshank/devlink-mongodb-aggregation</label>
       <h2 class="by_line">Alex Cruikshank</h2>
       <h2 class="by_line">acruikshank@github</h2>
       <h2 class="by_line">@sivoh</h2>
@@ -794,7 +1002,12 @@
     var subSlideIndex = 0;
     var subslides;
 
-    preso.rdbms_vs_dodb.init();
+    window.onload = function() {
+      var diagrams = document.getElementsByClassName('db-diagram');
+      for (var i=0,diagram; diagram = diagrams[i]; i++)
+        preso.rdbms_vs_dodb.render(diagram.id);
+    }
+
     var demos = document.getElementsByClassName('aggregate-demo');
     for (var i=0,demo; demo = demos[i]; i++) {
       var name = demo.getElementsByClassName('editor')[0].id;
@@ -902,9 +1115,9 @@
     }
 
     function next(e) {
-      console.log("NEXT", e);
-      if ( subslides && subSlideIndex < subslides.length - 1 )
+      if ( subslides && subSlideIndex < subslides.length - 1 ) {
         return transition( subslides[subSlideIndex], subslides[++subSlideIndex], 1 );
+      }
 
       if ( slideIndex >= slides.length - 1 )
         return;
@@ -915,7 +1128,6 @@
     }
 
     function prev(e) {
-      console.log("back", e);
       if ( subslides && subSlideIndex > 0 )
         return transition( subslides[subSlideIndex], subslides[--subSlideIndex], -1 );
 
