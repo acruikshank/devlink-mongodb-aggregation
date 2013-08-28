@@ -16,7 +16,7 @@ dma_talk.aggregationDemonstration = function(slide) {
     if (val == null) f.appendChild(value(''))
     else if (typeof(val) == 'string' && (m=val.match(dateMatch))) f.appendChild(value([m[2],m[3],m[1]].join('/')))
     else if (typeof(val) == 'string') f.appendChild(value(val))
-    else if (typeof(val) == 'number') f.appendChild(value(val.toFixed(2)))    
+    else if (typeof(val) == 'number') f.appendChild(value(val.toFixed(val==Math.round(val)?0:2)))    
     else if (typeof(val) == 'object' && val.length !== undefined) {
       f.appendChild(disclosure());
       f.appendChild(arrayRenderer(val,'toggle '+name))
