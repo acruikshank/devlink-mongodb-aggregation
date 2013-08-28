@@ -2,431 +2,8 @@
 <html lang="en">
 <head>
   <title>MongoDB Aggregation Presentation</title>
-  <style>
-    html { height: 100%; }
-    body {
-      background-color: rgb(40,40,40);
-      margin: 0;
-      padding: 0;
-      font-family: Futura,Helvetica,Arial,san-serif;
-      color: #eee;
-      overflow: hidden;
-      height: 100%;
-       -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-   }
-
-   .slide {
-     position: absolute;
-     top: 0;
-     color: #eee;
-     overflow: hidden;
-   }
-
-  .slide.transition, .sub-slide.transition {
-    -webkit-transition: left .15s ease;
-  }
-
-  .slide .head {
-    text-align: center;
-    font-size: 48px;
-    font-weight: normal;
-    margin: 60px 0 60px;
-  }
-
-  .slide.bulleted ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .slide.bulleted ul.column-1of2 {
-    display: inline-block;
-    width: 25%;
-    vertical-align: top;
-    margin-left: 25%;
-  }
-
-  .slide.bulleted ul.column-2of2 {
-    display: inline-block;
-    width: 20%;
-    vertical-align: top;
-    margin-left: 10%;
-  }
-
-  .slide.bulleted ul.column-1of3 {
-    font-size: 18px;
-    display: inline-block;
-    width: 20%;
-    vertical-align: top;
-    margin-left: 10%;
-  }
-
-  .slide.bulleted ul.column-2of3 {
-    font-size: 18px;
-    display: inline-block;
-    width: 20%;
-    vertical-align: top;
-    margin-left: 10%;
-  }
-
-  .slide.bulleted ul.column-3of3 {
-    font-size: 18px;
-    display: inline-block;
-    width: 20%;
-    vertical-align: top;
-    margin-left: 10%;
-  }
-
-
-  .slide.bulleted li {
-    font-size: 40px;
-    line-height: 90px;
-    width: 800px;
-    margin: 0 auto;
-  }
-
-  .slide.bulleted.narrow li {
-    width: 400px;
-  }
-
-  .slide.bulleted.wide li {
-    width: 1000px;
-  }
-
-  .slide img {
-    display: block;
-    height: 50%;
-    margin: 0 auto;
-  }
-
-  .slide label.caption {
-    display: block;
-    text-align: center;
-    font-size: 24px;
-    font-weight: normal;
-    margin-top: 40px;    
-  }
-
-  .slide .center {
-    text-align: center;
-    font-size: 60px;
-    font-weight: normal;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 40%;
-    margin-top: -30px;
-    line-height: 60px;
-    height: 60px;
-  }
-
-  .slide label.sub-center {
-    display: block;
-    text-align: center;
-    font-size: 32px;
-    font-weight: normal;
-    position: absolute;  
-    top:50%;
-    width: 100%;
-  }
-
-  .slide label.url {
-    display: block;
-    text-align: center;
-    font-size: 28px;
-    font-weight: normal;
-    position: absolute;  
-    top:-60%;
-    width: 100%;
-  }
-
-  .sub-slide {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-  }
-
-  .sub-slide h3 {
-    text-align: center;
-    font-size: 30px;
-    font-weight: normal;
-    margin: 60px 0 60px;
-    color: #ccc;    
-  }
-
-  .title-screen {
-    position: absolute;
-    right: 0px;
-    width: 100%;
-    bottom: 5%;
-  }
-
-  .title-screen h1 {
-    font-size: 64px;
-    font-weight: normal;
-    text-align: center;
-    margin: 0px 0 100px;
-  }
-
-  .title-screen h2.center {
-    position: absolute;
-    font-weight: normal;
-    text-align: center;
-    margin: 0;
-    top: -90%;
-  }
-
-  h2.by_line {
-    font-size: 34px;
-    font-weight: normal;
-    margin: 0 6% 0 0;
-    padding:0 10% 0 0;
-    line-height: 65px;
-    text-align: right;
-  }
-
-  h2.logo {
-    margin: 0;
-    margin: 0 5% 0 0;
-    padding:0;
-    text-align: right;    
-  }
-
-  h2.logo img {
-    height: 100px;
-    display: inline;
-    margin: 0;
-  }
-
-  h2.top {
-    text-align: center;
-    padding-top: 0;
-    margin-top: 10px;
-  }
-
-  h2.center.quote {
-    font-size: 3.5em;
-    line-height: 1.5em;
-    margin: -10% 10% 0;
-  }
-
-  .img img {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    height: 100%;
-  }
-
-  .caption {
-    position: absolute;
-    z-index: 1;
-    bottom: 15%;
-    left: 15%;
-    font-size: 40px;
-  }
-
-  .caption.right {
-    left: auto;
-    right: 5%;
-    bottom: 0%;    
-  }
-
-  .caption.dark {
-    color: #000;
-    text-shadow: 1px 1px 1px #fff;
-  }
-
-  .caption.light {
-    color: #fff;
-    text-shadow: 1px 1px 1px #000;
-  }
-
-  .code-container {
-    -webkit-transition: opacity .2s linear;
-    position: absolute;
-    top: 30%;
-    right: 0;
-    height: 40%;
-    left: 0;
-    z-index: 1;
-  }
-
-  .code-container .code {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    left: 0;        
-    font-size: 20px;
-  }
-
-  .editor-container {
-    -webkit-transition: opacity .2s linear;
-    position: absolute;
-    top: 8%;
-    right: 0;
-    height: 41%;
-    left: 0;
-    z-index: 1;
-  }
-
-  .editor-container .editor {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    left: 0;        
-    font-size: 20px;
-  }
-
-  .results {
-    position: absolute;
-    height: 49%;
-    bottom: 1%;
-    right: 20px;
-    left: 20px;
-    overflow: auto;
-    font-size:16px;
-  }
-
-  .aggregate-demo .stats {
-    text-align: center;
-    padding: .3em .8em;
-    font-size: 20px;
-    position: absolute;
-    bottom: 1%;
-    right: 20px;
-    background: rgba(10,10,10,.85);
-    z-index: 1;
-    border-radius: 6px;
-    border: 1px solid #000;
-  }
-
-
-  .results .result {
-    margin: 0px 0 6px;
-    white-space: nowrap;
-  }
-
-  .results .result:last-child {
-    margin-bottom: 20px;
-  }
-
-  .results .field {
-    display: inline-block;
-    position: relative;
-    vertical-align: top;
-  }
-
-  .results .field:last-child {
-    margin-right: 20px;
-  }
-
-  .results label, .aggregate-demo .stats label {
-    padding: 0 .4em 0 1em;
-    color: #cea;
-  }
-
-  .aggregate-demo .stats label {
-    padding-left: 0;
-  }
-
-  .results .disclosure {
-    font-size: 14px;
-    color: #78b;
-    cursor: pointer;
-    display: block;
-    float: right;
-    margin-top: 2px;
-  }
-
-  .results .opened .disclosure {
-    -webkit-transform: rotate(-180deg);
-  }
-
-  .results .toggle {
-    -webkit-transition: width .2s ease, height .5s ease;
-    width: 0px;
-    height: 0px;
-    overflow: hidden;
-  }
-
-  .aggregate-demo .editor-toggle {
-    width: 80px;
-    height: 8%;
-    position: absolute;
-    top: 0;
-    right: 0;
-    cursor: pointer;
-  }
-
-  .aggregate-demo .editor-toggle-thumb {
-    -webkit-transition: background-color,left .2s ease;
-    width: 12px;
-    height: 12px;
-    position: absolute;
-    margin-top: -6px;
-    top: 50%;
-    left: 0px;
-    background-color: #7ae;
-    border-radius: 6px;
-  }
-
-  .aggregate-demo .stages {
-    position: absolute;
-    top: 8%;
-    right: 0;
-    height: 41%;
-    left: 0;
-  }
-
-  .aggregate-demo .stages .step {
-    background-color: #368;
-    font-size: 18px;
-    padding: .4em 0;    
-    cursor: pointer;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-  }
-
-  .aggregate-demo .stages .step:hover {
-    background-color: #479;
-  }
-
-  .aggregate-demo .stages .step-active {
-    display: inline-block;
-    border-radius: 10px;
-    width: 12px;
-    height: 12px;
-    margin: 0 1em 0 2em;
-    border: 2px solid #fff;
-    vertical-align: baseline;
-  }
-  .aggregate-demo .stages .active .step-active {
-    background-color: rgba(255,255,255,.75);
-  }
-
-  .aggregate-demo.step-by-step .editor-toggle-thumb {
-    left: 40px;
-    background-color: #ce8;
-  }
-
-  .aggregate-demo.step-by-step .editor-container {
-    opacity: 0;
-  }
-  .aggregate-demo.step-by-step .stages {
-    z-index: 2;
-  }
-
-
-  </style>
+  <link rel="stylesheet" type="text/css" href="presentation.css">
   <link rel="stylesheet" type="text/css" href="rdbms_vs_dodb.css">
-  <script src="rdbms_vs_dodb.js" charset="utf-8"></script>
 </head>
 <body>
   <div class="slide">
@@ -463,6 +40,7 @@
 
   <div class="slide">
     <h2 class="center">The Relational Model</h2>
+    <label class="sub-center">The Database is the Application</label>
   </div>
 
   <div class="slide">
@@ -480,15 +58,16 @@
   </div>
 
   <div class="slide">
+    <h2 class="center">The Application is the Application</h2>
+  </div>
+
+  <div class="slide">
     <div class="database">
       <svg class="db-diagram" id="normalized-vs-application">
       </svg>
     </div>
     <div class="sub-slide">
       <h3>relational data vs. application data</h3>
-    </div>
-    <div class="sub-slide">
-      <h3>object relational impedance mismatch</h3>
     </div>
   </div>
 
@@ -509,6 +88,9 @@
     </div>
     <div class="sub-slide">
       <h3>denormalized is a better fit</h3>
+    </div>
+    <div class="sub-slide">
+      <h3>object relational impedance mismatch</h3>
     </div>
   </div>
 
@@ -552,7 +134,7 @@
   db.customers.find(
     { 'address.zip': '37421' }, 
     { email:1 }
-  )</div>
+  );</div>
     </div>
   </div>
 
@@ -562,7 +144,7 @@
       <div class="code" id="update_example">  db.customers.update(
     {email:'mbrown@example.com'}, 
     {$set:{'address.zip':'37412'}}
-  )</div>
+  );</div>
     </div>
   </div>
 
@@ -747,7 +329,8 @@
     <div class="editor-container">
       <div id="project_function_editor" class="editor interactive">  db.customers.aggregate([
     {$match: {'address.zip':'37421'}},
-    {$project: {_id:0, name:{$concat:['$firstName',' ','$lastName']}, zip:'$address.zip'}}
+    {$project: {_id:0, name:{$concat:['$firstName',' ','$lastName']}, 
+                zip:'$address.zip'}}
   ])</div>
     </div>
     <div class="results"></div>
@@ -791,18 +374,13 @@
   <div class="slide aggregate-demo">
     <h2 class="top">$sort, $skip, $limit</h2>
     <div class="editor-container">
-      <div id="limit_skip_sort_editor" class="editor interactive">  var PAGE_SIZE = 5;
-  function sort(field, ascending) {
-    var s = {$sort:{}}; s.$sort[field] = ascending ? 1 : -1; return [s];
-  }
-  function page(pageIndex) {
-    return [ {$skip: pageIndex * PAGE_SIZE}, {$limit: PAGE_SIZE} ]
-  }
-  var fullName = [{$project: {_id:0, name:{$concat:['$firstName',' ','$lastName']}}}];
-  var email = [{$project: {_id:0, email:1}}]
-
-  db.customers.aggregate( fullName.concat(sort('name',1)).concat(page(0)) )</div>
-    </div>
+      <div id="limit_skip_sort_editor" class="editor interactive">  db.customers.aggregate([
+    {$project: {_id:0, name:{$concat:['$lastName',', ','$firstName']}}},
+    {$sort: {name:1}},
+    {$skip: 20},
+    {$limit: 10}
+  ])</div>
+      </div>
     <div class="results"></div>
   </div>
 
@@ -904,10 +482,10 @@
     {$match: {lastName:'Smith'}},
     {$unwind: '$purchases'},
     {$match: {'purchases.date':{$gte:new Date('2013-08-01')}}},
-    {$group: {_id:'$purchases.sku', 
+    {$group: {_id:'$purchases.name', 
             total:{$sum:'$purchases.amount'}, 
-            brand:{$first:'$purchases.name'}}},
-    {$project: {_id:0, brand:1, total:1}},
+            sku:{$first:'$purchases.sku'}}},
+    {$project: {_id:0, brand:'$_id', sku:1, total:1}},
     {$sort: {total:-1}}
   ])</div>
     </div>
@@ -939,10 +517,13 @@
     <div class="editor-container">
       <div id="more_than_5_hits_editor" class="editor interactive">  db.customers.aggregate([
     {$match: {'address.zip':'37421'}},
-    {$project: {_id:0, email:1, name:{$concat:['$firstName',' ','$lastName']}, webVisits:1}},
+    {$project: {_id:0, email:1, 
+                name:{$concat:['$firstName',' ','$lastName']}, 
+                webVisits:1}},
     {$unwind: '$webVisits'},
     {$match: {'webVisits.date':{$gte:new Date('2013-08-20')}}},
-    {$group: {_id:'$email', name:{$first:'$name'}, hits:{$sum:'$webVisits.hits'}}},
+    {$group: {_id:'$email', name:{$first:'$name'}, 
+              hits:{$sum:'$webVisits.hits'}}},
     {$match: {hits:{$gte:5}}}
   ])</div>
     </div>
@@ -954,10 +535,11 @@
     <div class="editor-container">
       <div id="avg_revenue_per_visit_editor" class="editor interactive">  db.customers.aggregate([
     {$unwind: '$purchases'},
-    {$group: {_id:{email:'$email', date:'$purchases.date'}, total:{$sum:'$purchases.amount'}}},
+    {$group: {_id:{email:'$email', date:'$purchases.date'}, 
+              total:{$sum:'$purchases.amount'}}},
     {$group: {_id:'average_revenue', visits:{$sum:1}, revenue:{$sum:'$total'}}},
     {$project: {_id:0, visits:1, 
-        "average revenue per-person per-visit":{$divide:['$revenue','$visits']}}}
+        "average revenue":{$divide:['$revenue','$visits']}}}
   ])</div>
     </div>
     <div class="results"></div>
@@ -975,7 +557,7 @@
     {$match: {matches:true}},
     {$group: {_id:'average_revenue', visits:{$sum:1}, revenue:{$sum:'$total'}}},
     {$project: {_id:0, visits:1, 
-        "average revenue per-person per-visit":{$divide:['$revenue','$visits']}}}
+        "average revenue":{$divide:['$revenue','$visits']}}}
   ])</div>
     </div>
     <div class="results"></div>
@@ -994,6 +576,7 @@
 
 </body>
 <foot>
+  <script src="rdbms_vs_dodb.js" charset="utf-8"></script>
   <script src="aggregateDemonstration.js" type="text/javascript" charset="utf-8"></script>
   <script src="vendor/ace.js" type="text/javascript" charset="utf-8"></script>
   <script>
